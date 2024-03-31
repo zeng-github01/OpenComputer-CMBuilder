@@ -3,6 +3,7 @@ local robot = require("robot")
 local sides = require("sides")
 local component = require("component")
 local inventory_controller = component.inventory_controller
+local navigation = component.navigation
 
 -- 导入坐标定位脚本
 local Pos = require("Pos")
@@ -20,7 +21,7 @@ local function getStackInSlot(side, slot)
 end
 
 local function getStackInInternalSlot(slot)
-    return robot.getStackInInternalSlot(slot)
+    return inventory_controller.getStackInInternalSlot(slot)
 end
 
 local function getInternalInventorySize()
@@ -79,39 +80,80 @@ local function suckDown(count)
     robot.suckDown(count)
 end
 
+local function getFacing()
+    return navigation.getFacing()
+end
+
 -- 更新Pos对象
-local function updatePos(direction)
+local function updatePos(direction, steps)
     if direction == sides.front then
-        pos.x = pos.x + 1
+        pos.x = pos.x + steps
     elseif direction == sides.back then
-        pos.x = pos.x - 1
+        pos.x = pos.x - steps
     elseif direction == sides.top then
-        pos.y = pos.y + 1
+        pos.y = pos.y + steps
     elseif direction == sides.bottom then
-        pos.y = pos.y - 1
+        pos.y = pos.y - steps
     elseif direction == sides.left then
-        pos.z = pos.z - 1
+        pos.z = pos.z - steps
     elseif direction == sides.right then
-        pos.z = pos.z + 1
+        pos.z = pos.z + steps
     end
 end
 
 -- 使用机器人接口移动
-local function move(direction)
+local function move(direction, steps)
+    local steps = steps or 1
+    -- local initialFacing = robot.getFacing() -- 获取初始朝向
     if direction == sides.front then
-        robot.forward()
+        for i = 1, steps do
+            robot.forward()
+        end
     elseif direction == sides.back then
-        robot.back()
+        for i = 1, steps do
+            robot.back()
+        end
     elseif direction == sides.top then
-        robot.up()
+        for i = 1, steps do
+            robot.up()
+        end
     elseif direction == sides.bottom then
-        robot.down()
+        for i = 1, steps do
+            robot.down()
+        end
     elseif direction == sides.left then
         robot.turnLeft()
+        for i = 1, steps do
+            robot.forward()
+        end
+        robot.turnRight()
     elseif direction == sides.right then
         robot.turnRight()
+        for i = 1, steps do
+            robot.forward()
+        end
+        robot.turnLeft()
     end
-    updatePos(direction)
+    updatePos(direction, steps)
+end
+
+local function restPosition()
+    local origin = Pos:new(0, 0, 0)
+    if pos.x > origin.x then
+        move(sides.back, pos.x - origin.x)
+    elseif pos.x < origin.x then
+        move(sides.front, origin.x - pos.x)
+    end
+    if pos.y > origin.y then
+        move(sides.bottom, pos.y - origin.y)
+    elseif pos.y < origin.y then
+        move(sides.top, origin.y - pos.y)
+    end
+    if pos.z > origin.z then
+        move(sides.left, pos.z - origin.z)
+    elseif pos.z < origin.z then
+        move(sides.right, origin.z - pos.z)
+    end
 end
 
 -- 返回库
@@ -134,5 +176,11 @@ return {
     placeDown = placeDown,
     suck = suck,
     suckDown = suckDown,
-    suckUp = suckUp
+    suckUp = suckUp,
+    restPosition = restPosition
 }
+
+-- 检查并复位朝向
+-- while robot.getFacing() ~= initialFacing do
+--     robot.turnRight()
+-- end

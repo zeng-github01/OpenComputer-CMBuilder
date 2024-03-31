@@ -24,7 +24,9 @@ while true do
     if rs.getInput(sides.right) > 0 then
         -- 移动到原材料存放容器
         robotLib.move(sides.top)
-        robotLib.move(sides.right, 2)
+        robotLib.move(sides.right)
+        robotLib.move(sides.front)
+        robotLib.move(sides.front)
 
         -- 对容器和机器人背包的插槽数取最小值
         local minSlots = math.min(robotLib.getInventorySize(sides.bottom), robotLib.getInternalInventorySize())
@@ -40,8 +42,13 @@ while true do
         end
 
         -- 移动到工作区域的起始点
-        robotLib.move(sides.left, 5)
-        robotLib.move(sides.left, 2)
+        robotLib.move(sides.left)
+        for i = 1, 5 do
+            robotLib.move(sides.front)
+        end
+        robotLib.move(sides.left)
+        robotLib.move(sides.front)
+        robotLib.move(sides.front)
         robotLib.move(sides.top)
 
         -- 工作逻辑
@@ -61,9 +68,13 @@ while true do
                             break
                         end
                     end
-                    robotLib.move(sides.top, 5)
+                    for j = 1, 5 do
+                        robotLib.move(sides.top)
+                    end
                     robotLib.dropDown(1)
                 end
+            else
+                break
             end
         end
 
