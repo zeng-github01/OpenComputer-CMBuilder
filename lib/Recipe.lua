@@ -22,28 +22,38 @@ end
 local function matchRecipe()
     for row = 1, 81 / 9 do -- 假设数据库每9个格子为一行
         local materials, catalyst, product = getCraftingPattern(row)
-        local match = false
-        for slot = 1, robotLib.getInternalInventorySize() do -- 遍历机器人的所有物品槽
+        local materialMatches = {} -- 用于跟踪每种材料是否匹配
+
+        -- 初始化材料匹配跟踪表
+        for i = 1, #materials do
+            materialMatches[i] = false
+        end
+
+        -- 遍历机器人的所有物品槽
+        for slot = 1, robotLib.getInternalInventorySize() do
             local stack = robotLib.getStackInInternalSlot(slot)
             if stack then -- 如果物品槽不为空
-                local found = false
-                for _, material in ipairs(materials) do
-                    if stack.name == material.name then
-                        found = true
-                        break
+                for i, material in ipairs(materials) do
+                    if stack.name == material.name and (material.damage == nil or stack.damage == material.damage) then
+                        materialMatches[i] = true -- 标记找到匹配的材料
                     end
-                end
-                if not found and catalyst and stack.name == catalyst.name then
-                    found = true
-                end
-                if found then
-                    match = true
-                    break
                 end
             end
         end
-        if match then
-            return product.label -- 返回匹配的合成表产物的标签
+
+        -- 检查是否所有材料都找到了匹配项
+        local allMatched = true
+        for _, matched in ipairs(materialMatches) do
+            if not matched then
+                allMatched = false
+                break
+            end
+        end
+
+        -- 如果所有材料都匹配，则返回产物的ID和damage值
+        if allMatched then
+            local itemName = product.name:match(":(.+)$")
+            return itemName .. "#" .. (product.damage or "") -- 返回匹配的合成表产物的ID和damage值
         end
     end
     return nil -- 没有匹配的合成表
