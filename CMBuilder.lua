@@ -1,4 +1,5 @@
 local robotLib = require("robotLib")
+local recipe = require("Recipe")
 local sides = require("sides")
 local component = require("component")
 local event = require("event")
@@ -38,6 +39,8 @@ while true do
                 break
             end
         end
+
+        print(recipe.matchRecipe())
 
         -- 移动到工作区域的起始点
         robotLib.move(sides.left, 6)
