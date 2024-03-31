@@ -40,8 +40,8 @@ while true do
         end
 
         -- 移动到工作区域的起始点
-        robotLib.move(sides.left, 5)
-        robotLib.move(sides.left, 2)
+        robotLib.move(sides.left, 6)
+        robotLib.move(sides.front, 5)
         robotLib.move(sides.top)
 
         -- 工作逻辑

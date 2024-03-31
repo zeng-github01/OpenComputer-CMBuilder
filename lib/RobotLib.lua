@@ -25,7 +25,7 @@ local function getStackInInternalSlot(slot)
 end
 
 local function getInternalInventorySize()
-    robot.inventorySize()
+   return robot.inventorySize()
 end
 
 local function equip()
@@ -144,15 +144,15 @@ local function restPosition()
     elseif pos.x < origin.x then
         move(sides.front, origin.x - pos.x)
     end
-    if pos.y > origin.y then
-        move(sides.bottom, pos.y - origin.y)
-    elseif pos.y < origin.y then
-        move(sides.top, origin.y - pos.y)
-    end
     if pos.z > origin.z then
         move(sides.left, pos.z - origin.z)
     elseif pos.z < origin.z then
         move(sides.right, origin.z - pos.z)
+    end
+    if pos.y > origin.y then
+        move(sides.bottom, pos.y - origin.y)
+    elseif pos.y < origin.y then
+        move(sides.top, origin.y - pos.y)
     end
 end
 
