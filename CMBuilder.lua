@@ -1,12 +1,11 @@
 local robotLib = require("robotLib")
--- local recipe = require("Recipe")
+local recipe = require("Recipe")
 local sides = require("sides")
 local component = require("component")
 local event = require("event")
 local thread = require("thread")
 local rs = component.redstone
 local keyboard = component.keyboard
-local recipe = require("Recipe")
 
 -- 创建一个新的线程来监听键盘事件
 local function listenForKeyboard()
