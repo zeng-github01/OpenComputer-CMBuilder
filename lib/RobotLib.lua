@@ -176,5 +176,6 @@ return {
     suck = suck,
     suckDown = suckDown,
     suckUp = suckUp,
-    restPosition = restPosition
+    restPosition = restPosition,
+    getFacing = getFacing
 }

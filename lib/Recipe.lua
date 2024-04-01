@@ -5,6 +5,7 @@ local json = require("json")
 local Pos = require("Pos")
 local filesystem = require("filesystem")
 local sides = require("sides")
+local debuglib = require("debugLib")
 
 local recipePath = "/usr/bin/recipe"
 local craftingOrigin
@@ -148,7 +149,7 @@ end
 local function processRecipe()
     print("process")
     local recipe = readJson(recipeName)
-    print(recipe)
+    print(debuglib.dump(recipe))
     for y, zLayer in ipairs(recipe) do
         print("y" .. y)
         -- 遍历Z层
@@ -181,5 +182,6 @@ end
 
 return {
     initCrafting = initCrafting,
-    processRecipe = processRecipe
+    processRecipe = processRecipe,
+    matchRecipe = matchRecipe
 }
