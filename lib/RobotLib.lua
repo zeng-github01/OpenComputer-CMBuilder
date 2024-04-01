@@ -52,8 +52,8 @@ local function dropDown(count)
     return robot.dropDown(count)
 end
 
-local function select(index)
-    robot.select(index)
+local function select(slot)
+    robot.select(slot)
 end
 
 local function place(side, sneaky)
@@ -104,7 +104,6 @@ end
 -- 使用机器人接口移动
 local function move(direction, steps)
     local steps = steps or 1
-    -- local initialFacing = robot.getFacing() -- 获取初始朝向
     if direction == sides.front then
         for i = 1, steps do
             robot.forward()
@@ -179,8 +178,3 @@ return {
     suckUp = suckUp,
     restPosition = restPosition
 }
-
--- 检查并复位朝向
--- while robot.getFacing() ~= initialFacing do
---     robot.turnRight()
--- end

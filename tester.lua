@@ -6,6 +6,7 @@ local event = require("event")
 local thread = require("thread")
 local rs = component.redstone
 local keyboard = component.keyboard
+local recipe = require("Recipe")
 
 -- 创建一个新的线程来监听键盘事件
 local function listenForKeyboard()
@@ -49,33 +50,13 @@ local craftingThread = thread.create(function ()
             robotLib.move(sides.front, 5)
             robotLib.move(sides.top)
     
-            -- 工作逻辑
-            for i = 1, minSlots do
-                local item = robotLib.getStackInInternalSlot(i)
-                if item ~= nil then
-                    if item.name == "minecraft:iron_block" then
-                        robotLib.select(i)
-                        robotLib.placeDown()
-                        robotLib.move(sides.top)
-                        -- 找到红石粉并放置
-                        for j = 1, minSlots do
-                            local redstone = robotLib.getStackInInternalSlot(j)
-                            if redstone ~= nil and redstone.name == "minecraft:redstone" then
-                                robotLib.select(j)
-                                robotLib.placeDown()
-                                break
-                            end
-                        end
-                        robotLib.move(sides.top, 5)
-                        robotLib.dropDown(1)
-                    end
-                end
-            end
+            recipe.initCrafting(robotLib.pos)
+            recipe.processRecipe()
     
             -- 回到原点
             robotLib.restPosition()
     
-            -- 等待10秒钟
+            -- 等待3秒钟
             os.sleep(3)
         end
         os.sleep(0.05)
