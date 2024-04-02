@@ -51,29 +51,17 @@ local craftingThread = thread.create(function()
             -- recipe.processRecipe()
             local recipeName = recipe.matchRecipe()
             if recipeName == "wallbreakable#0" then
-                for i = 1, minSlots do
-                    local item = robotLib.getStackInInternalSlot(i)
-                    if item ~= nil then
-                        if item.name == "minecraft:iron_block" then
-                            robotLib.select(i)
-                            robotLib.placeDown()
-                            robotLib.move(sides.top)
-                            -- 找到红石粉并放置
-                            for j = 1, minSlots do
-                                local redstone = robotLib.getStackInInternalSlot(j)
-                                if redstone ~= nil and redstone.name == "minecraft:redstone" then
-                                    robotLib.select(j)
-                                    robotLib.placeDown()
-                                    break
-                                end
-                            end
-                            robotLib.move(sides.top, 5)
-                            robotLib.dropDown(1)
-                        end
-                    else
-                        break
-                    end
+                if robotLib.selectItem("minecraft:iron_block") then
+                    robotLib.placeDown()
+                    robotLib.move(sides.top)
                 end
+
+                if robotLib.selectItem("minecraft:redstone") then
+                    robotLib.placeDown()
+                end
+
+                robotLib.move(sides.top, 5)
+                robotLib.dropDown(1)
             end
 
             -------------------
