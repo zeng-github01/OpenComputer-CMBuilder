@@ -7,7 +7,7 @@ local filesystem = require("filesystem")
 local sides = require("sides")
 local debuglib = require("debugLib")
 
-local recipePath = "/usr/bin/recipe"
+local recipePath = "/usr/bin/recipe/"
 local craftingOrigin
 local recipeName
 local catalyst
@@ -76,9 +76,11 @@ end
 
 local function readJson(filename)
     local fullPath = recipePath .. filename .. ".json"
+    print(fullPath)
 
     -- 检查文件是否存在
     if filesystem.exists(fullPath) and not filesystem.isDirectory(fullPath) then
+        print("read file")
         local file = io.open(fullPath, "r")
         if file then
             local content = file:read("*a")
