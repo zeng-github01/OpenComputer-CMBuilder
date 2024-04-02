@@ -63,7 +63,7 @@ local function matchRecipe()
         -- 如果所有材料都匹配，则返回产物的ID和damage值
         if allMatched then
             local itemName = product.name:match(":(.+)$")
-            return itemName .. "#" .. (product.damage or ""), catalyst  -- 返回匹配的合成表产物的ID和damage值
+            return itemName .. "#" .. (product.damage or ""), catalyst -- 返回匹配的合成表产物的ID和damage值
         end
     end
     return nil -- 没有匹配的合成表
@@ -83,6 +83,7 @@ local function readJson(filename)
         if file then
             local content = file:read("*a")
             file:close()
+            print(content)
             -- 将文件内容解析为 Lua 表
             return json.decode(content)
         else
@@ -147,6 +148,7 @@ local function process_cell_content(relativeX, relativeY, relativeZ, cell_conten
 end
 
 local function processRecipe()
+    --
     print("process")
     local recipe = readJson(recipeName)
     print(debuglib.dump(recipe))

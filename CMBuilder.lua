@@ -50,6 +50,7 @@ local craftingThread = thread.create(function()
             -- recipe.initCrafting(robotLib.pos)
             -- recipe.processRecipe()
             local recipeName = recipe.matchRecipe()
+            print(recipeName)
             if recipeName == "wallbreakable#0" then
                 if robotLib.selectItem("minecraft:iron_block") then
                     robotLib.placeDown()
@@ -146,6 +147,56 @@ local craftingThread = thread.create(function()
                     robotLib.dropDown(1)
                 end
                 -- if外层
+            end
+
+            if recipeName == "machine#0" then
+                --
+            end
+
+            if recipeName == "machine#5" then
+                if robotLib.selectItem("compactmachines3:wallbreakable") then
+                    robotLib.placeDown()
+                    for i = 1, 4 do
+                        robotLib.move(sides.right, 1)
+                        robotLib.placeDown()
+                    end
+
+                    for i = 1, 4 do
+                        robotLib.move(sides.front)
+                        robotLib.placeDown()
+                    end
+
+                    for i = 1, 4 do
+                        robotLib.move(sides.left)
+                        robotLib.placeDown()
+                    end
+                    
+                    for i = 1, 3 do
+                        robotLib.move(sides.back)
+                        robotLib.placeDown()
+                    end
+
+                    for i = 1, 3 do
+                        robotLib.move(sides.right)
+                        robotLib.placeDown()
+                    end
+
+                    for i = 1, 2 do
+                        robotLib.move(sides.front)
+                        robotLib.placeDown()
+                    end
+
+                    for i = 1, 2 do
+                        robotLib.move(sides.left)
+                        robotLib.placeDown()
+                    end
+
+                    robotLib.move(sides.back)
+                    robotLib.placeDown()
+                    robotLib.move(sides.right)
+                    robotLib.placeDown()
+                end
+                --if外层
             end
 
             -- 回到原点
