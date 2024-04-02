@@ -84,6 +84,18 @@ local function getFacing()
     return navigation.getFacing()
 end
 
+local function selectItem(itemName)
+    for slot = 1, getInternalInventorySize() do
+        local stack = getStackInInternalSlot(slot)
+        if stack and stack.name == itemName then
+            select(slot)
+            return true            
+        end
+    end
+
+    return false
+end
+
 -- 更新Pos对象
 local function updatePos(direction, steps)
     if direction == sides.front then
@@ -177,5 +189,6 @@ return {
     suckDown = suckDown,
     suckUp = suckUp,
     restPosition = restPosition,
-    getFacing = getFacing
+    getFacing = getFacing,
+    selectItem = selectItem
 }

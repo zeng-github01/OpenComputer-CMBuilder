@@ -79,120 +79,84 @@ local craftingThread = thread.create(function()
             -------------------
 
             if recipeName == "tunneltool#0" then
-                local redstoneSlot
                 robotLib.move(sides.right, 2)
                 robotLib.move(sides.front, 2)
-                for i = 1, minSlots do
-                    local item = robotLib.getStackInInternalSlot(i)
-                    if item ~= nil then
-                        if item.name == "compactmachines3:wallbreakable" then
-                            robotLib.select(i)
-                            robotLib.placeDown()
-                            break
-                        end
-                    end
+                if robotLib.selectItem("compactmachines3:wallbreakable") then
+                    robotLib.placeDown()
                 end
 
-                -- 找到红石粉并放置
-                for j = 1, minSlots do
-                    local redstone = robotLib.getStackInInternalSlot(j)
-                    redstoneSlot = j
-                    if redstone ~= nil and redstone.name == "minecraft:redstone" then
-                        redstoneSlot = j
-                        robotLib.select(j)
-                        robotLib.move(sides.back, 1)
+                if robotLib.selectItem("minecraft:redstone") then
+                    robotLib.move(sides.back, 1)
+                    robotLib.placeDown()
+                    robotLib.move(sides.left, 1)
+                    robotLib.placeDown()
+                    robotLib.move(sides.right, 2)
+                    robotLib.placeDown()
+                    for i = 1, 2 do
+                        robotLib.move(sides.front)
                         robotLib.placeDown()
-                        robotLib.move(sides.left, 1)
-                        robotLib.placeDown()
-                        robotLib.move(sides.right, 2)
-                        robotLib.placeDown()
-                        for i = 1, 2 do
-                            robotLib.move(sides.front)
-                            robotLib.placeDown()
-                        end
-                        for i = 1, 2 do
-                            robotLib.move(sides.left)
-                            robotLib.placeDown()
-                        end
-
-                        robotLib.move(sides.back)
-                        robotLib.placeDown()
-                        break
                     end
+                    for i = 1, 2 do
+                        robotLib.move(sides.left)
+                        robotLib.placeDown()
+                    end
+
+                    robotLib.move(sides.back)
+                    robotLib.placeDown()
                 end
+
                 robotLib.move(sides.top)
                 robotLib.move(sides.right)
 
-                for h = 1, minSlots do
-                    local hopper = robotLib.getStackInInternalSlot(h)
-                    if hopper and hopper.name == "minecraft:hopper" then
-                        robotLib.select(h)
-                        robotLib.placeDown()
-                        break
-                    end
+                if robotLib.selectItem("minecraft:hopper") then
+                    robotLib.placeDown()
                 end
+
                 robotLib.move(sides.top, 5)
-                robotLib.select(redstoneSlot)
-                robotLib.dropDown(1)
+                if robotLib.selectItem("minecraft:redstone") then
+                    robotLib.dropDown(1)
+                end
                 -- if外层
             end
 
             if recipeName == "redstonetunneltool#0" then
-                local redstoneSlot
                 robotLib.move(sides.right, 2)
                 robotLib.move(sides.front, 2)
-                for i = 1, minSlots do
-                    local item = robotLib.getStackInInternalSlot(i)
-                    if item ~= nil then
-                        if item.name == "compactmachines3:wallbreakable" then
-                            robotLib.select(i)
-                            robotLib.placeDown()
-                            break
-                        end
-                    end
+                if robotLib.selectItem("compactmachines3:wallbreakable") then
+                    robotLib.placeDown()
                 end
 
-                -- 找到红石粉并放置
-                for j = 1, minSlots do
-                    local redstone = robotLib.getStackInInternalSlot(j)
-                    redstoneSlot = j
-                    if redstone ~= nil and redstone.name == "minecraft:redstone" then
-                        redstoneSlot = j
-                        robotLib.select(j)
-                        robotLib.move(sides.back, 1)
+                if robotLib.selectItem("minecraft:redstone") then
+                    robotLib.move(sides.back, 1)
+                    robotLib.placeDown()
+                    robotLib.move(sides.left, 1)
+                    robotLib.placeDown()
+                    robotLib.move(sides.right, 2)
+                    robotLib.placeDown()
+                    for i = 1, 2 do
+                        robotLib.move(sides.front)
                         robotLib.placeDown()
-                        robotLib.move(sides.left, 1)
-                        robotLib.placeDown()
-                        robotLib.move(sides.right, 2)
-                        robotLib.placeDown()
-                        for i = 1, 2 do
-                            robotLib.move(sides.front)
-                            robotLib.placeDown()
-                        end
-                        for i = 1, 2 do
-                            robotLib.move(sides.left)
-                            robotLib.placeDown()
-                        end
-
-                        robotLib.move(sides.back)
-                        robotLib.placeDown()
-                        break
                     end
+                    for i = 1, 2 do
+                        robotLib.move(sides.left)
+                        robotLib.placeDown()
+                    end
+
+                    robotLib.move(sides.back)
+                    robotLib.placeDown()
                 end
+
                 robotLib.move(sides.top)
                 robotLib.move(sides.right)
 
-                for h = 1, minSlots do
-                    local hopper = robotLib.getStackInInternalSlot(h)
-                    if hopper and hopper.name == "minecraft:redstone_block" then
-                        robotLib.select(h)
-                        robotLib.placeDown()
-                        break
-                    end
+                if robotLib.selectItem("minecraft:redstone_block") then
+                    robotLib.placeDown()
                 end
+
                 robotLib.move(sides.top, 5)
-                robotLib.select(redstoneSlot)
-                robotLib.dropDown(1)
+                if robotLib.selectItem("minecraft:redstone") then
+                    robotLib.dropDown(1)
+                end
                 -- if外层
             end
 
