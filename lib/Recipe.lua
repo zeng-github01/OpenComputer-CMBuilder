@@ -76,16 +76,13 @@ end
 
 local function readJson(filename)
     local fullPath = recipePath .. filename .. ".json"
-    print(fullPath)
 
     -- 检查文件是否存在
     if filesystem.exists(fullPath) and not filesystem.isDirectory(fullPath) then
-        print("read file")
         local file = io.open(fullPath, "r")
         if file then
             local content = file:read("*a")
             file:close()
-            print(content)
             -- 将文件内容解析为 Lua 表
             return json.decode(content)
         else
@@ -154,6 +151,7 @@ local function processRecipe()
     print("process")
     local recipe = readJson(recipeName)
     print(debuglib.dump(recipe))
+    print(recipe)
     for y, zLayer in ipairs(recipe) do
         print("y" .. y)
         -- 遍历Z层

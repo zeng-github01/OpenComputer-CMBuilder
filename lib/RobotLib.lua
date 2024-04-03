@@ -89,11 +89,48 @@ local function selectItem(itemName)
         local stack = getStackInInternalSlot(slot)
         if stack and stack.name == itemName then
             select(slot)
-            return true            
+            return true
         end
     end
 
     return false
+end
+
+local function detectBlocked(side)
+    local facing = getFacing()
+    local turnTimes = 0
+
+    if facing == sides.top then
+        local isBlocked, _ = robot.detectUp()
+        return isBlocked
+    end
+
+    if facing == sides.bottom then
+        local isBlocked,_ = robot.detectDown()
+        return isBlocked
+    end
+
+    while (facing ~= side) do
+        robot.turnRight()
+        turnTimes = turnTimes +1
+    end
+    local isBlocked,_ = robot.detect()
+    if turnTimes > 0 then
+        for i = 1, turnTimes do
+            robot.turnLeft()
+        end
+    end
+    return isBlocked
+end
+
+local function turnTo(side)
+    if side == sides.front or side == sides.bottom  then
+        return
+    end
+    local facing = getFacing()
+    while facing ~= side do
+        robot.turnRight()
+    end
 end
 
 -- 更新Pos对象
@@ -116,6 +153,11 @@ end
 -- 使用机器人接口移动
 local function move(direction, steps)
     local steps = steps or 1
+
+    while not (getFacing() == sides.front) do
+        robot.turnRight()
+    end
+
     if direction == sides.front then
         for i = 1, steps do
             robot.forward()
@@ -146,6 +188,19 @@ local function move(direction, steps)
         robot.turnLeft()
     end
     updatePos(direction, steps)
+end
+
+local function moveWithDetect(side, steps)
+    local steps = steps or 1
+    for i = 1, steps do
+        if detectBlocked(side) then
+            for i = 2, 5 do
+                if not detectBlocked(i) then
+                    turnTo(i)
+                end
+            end
+        end
+    end    
 end
 
 local function restPosition()
@@ -190,5 +245,7 @@ return {
     suckUp = suckUp,
     restPosition = restPosition,
     getFacing = getFacing,
-    selectItem = selectItem
+    selectItem = selectItem,
+    detectBlocked = detectBlocked,
+    turnTo = turnTo
 }
