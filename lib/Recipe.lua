@@ -30,7 +30,7 @@ end
 
 -- 比对机器人内部物品堆栈与合成表
 local function matchRecipe()
-    for row = 1, 81 / 9 do         -- 假设数据库每9个格子为一行
+    for row = 1, 9 do         -- 假设数据库每9个格子为一行
         local materials, catalyst, product = getCraftingPattern(row)
         local materialMatches = {} -- 用于跟踪每种材料是否匹配
 
@@ -39,15 +39,19 @@ local function matchRecipe()
             materialMatches[i] = false
         end
 
+        local overstack = false
+
         -- 遍历机器人的所有物品槽
         for slot = 1, robotLib.getInternalInventorySize() do
             local stack = robotLib.getStackInInternalSlot(slot)
-            if stack then -- 如果物品槽不为空
-                for i, material in ipairs(materials) do
-                    if stack.name == material.name and (material.damage == nil or stack.damage == material.damage) then
-                        materialMatches[i] = true -- 标记找到匹配的材料
-                    end
+            for i, material in ipairs(materials) do
+                if stack and stack.name == material.name and stack.damage == material.damage then
+                    materialMatches[i] = true -- 标记找到匹配的材料
                 end
+            end
+            if stack and materials[slot] == nil then
+                overstack = true
+                break
             end
         end
 
@@ -61,7 +65,7 @@ local function matchRecipe()
         end
 
         -- 如果所有材料都匹配，则返回产物的ID和damage值
-        if allMatched then
+        if not overstack and allMatched then
             local itemName = product.name:match(":(.+)$")
             return itemName .. "#" .. (product.damage or ""), catalyst -- 返回匹配的合成表产物的ID和damage值
         end
