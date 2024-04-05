@@ -5,7 +5,6 @@ local json = require("json")
 local Pos = require("Pos")
 local filesystem = require("filesystem")
 local sides = require("sides")
-local debuglib = require("debugLib")
 
 local recipePath = "/usr/bin/recipe/"
 local craftingOrigin
@@ -154,7 +153,6 @@ local function processRecipe()
     --
     print("process")
     local recipe = readJson(recipeName)
-    print(debuglib.dump(recipe))
     print(recipe)
     for y, zLayer in ipairs(recipe) do
         print("y" .. y)
