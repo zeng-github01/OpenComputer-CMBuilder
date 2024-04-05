@@ -154,36 +154,44 @@ end
 local function move(direction, steps)
     local steps = steps or 1
 
-    while not (getFacing() == sides.front) do
-        robot.turnRight()
-    end
-
     if direction == sides.front then
         for i = 1, steps do
-            robot.forward()
+            while not detectBlocked(direction) do
+                robot.forward()
+            end
         end
     elseif direction == sides.back then
         for i = 1, steps do
-            robot.back()
+            while not detectBlocked(direction) do
+                robot.back()
+            end     
         end
     elseif direction == sides.top then
         for i = 1, steps do
-            robot.up()
+            while not detectBlocked(direction) do
+                robot.up()                
+            end
         end
     elseif direction == sides.bottom then
         for i = 1, steps do
-            robot.down()
+            while not detectBlocked(direction) do
+                robot.down()                
+            end
         end
     elseif direction == sides.left then
         robot.turnLeft()
         for i = 1, steps do
-            robot.forward()
+            while not detectBlocked(sides.front) do
+                robot.forward()     
+            end
         end
         robot.turnRight()
     elseif direction == sides.right then
         robot.turnRight()
         for i = 1, steps do
-            robot.forward()
+            while not detectBlocked(sides.front) do
+                robot.forward() 
+            end
         end
         robot.turnLeft()
     end
