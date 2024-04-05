@@ -66,7 +66,7 @@ local function matchRecipe()
         -- 如果所有材料都匹配，则返回产物的ID和damage值
         if not overstack and allMatched then
             local itemName = product.name:match(":(.+)$")
-            return itemName .. "#" .. (product.damage or ""), catalyst -- 返回匹配的合成表产物的ID和damage值
+            return itemName .. "#" .. product.damage , catalyst -- 返回匹配的合成表产物的ID和damage值
         end
     end
     return nil -- 没有匹配的合成表

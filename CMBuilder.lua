@@ -42,14 +42,17 @@ local craftingThread = thread.create(function()
                 end
             end
 
-            -- 移动到工作区域的起始点
-            robotLib.move(sides.left, 6)
-            robotLib.move(sides.front, 5)
-            robotLib.move(sides.top)
+               local recipeName = recipe.matchRecipe()
+
+            if recipeName ~= nil then
+                -- 移动到工作区域的起始点
+                robotLib.move(sides.left, 6)
+                robotLib.move(sides.front, 5)
+                robotLib.move(sides.top)
+            end
 
             -- recipe.initCrafting(robotLib.pos)
             -- recipe.processRecipe()
-            local recipeName = recipe.matchRecipe()
             print(recipeName)
             if recipeName == "wallbreakable#0" then
                 if robotLib.selectItem("minecraft:iron_block") then
@@ -170,7 +173,7 @@ local craftingThread = thread.create(function()
                         robotLib.move(sides.left)
                         robotLib.placeDown()
                     end
-                    
+
                     for i = 1, 3 do
                         robotLib.move(sides.back)
                         robotLib.placeDown()
@@ -206,6 +209,7 @@ local craftingThread = thread.create(function()
             os.sleep(3)
         end
         os.sleep(0.05)
+        ::continue::
     end
 end)
 
