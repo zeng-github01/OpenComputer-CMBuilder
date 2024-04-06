@@ -154,6 +154,12 @@ end
 local function move(direction, steps)
     local steps = steps or 1
 
+    -- 将机器人朝向复位为前方
+
+    while not (getFacing() == sides.front) do
+        robot.turnRight()
+    end
+
     if direction == sides.front then
         for i = 1, steps do
             while not detectBlocked(direction) do
