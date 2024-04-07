@@ -6,6 +6,7 @@ local event = require("event")
 local thread = require("thread")
 local rs = component.redstone
 local keyboard = component.keyboard
+local enabled = true
 
 -- 创建一个新的线程来监听键盘事件
 local function listenForKeyboard()
@@ -23,7 +24,7 @@ local keybordThread = thread.create(listenForKeyboard)
 
 -- 检查是否有红石信号
 local craftingThread = thread.create(function()
-    while true do
+    while enabled do
         if rs.getInput(sides.right) > 0 then
             -- 移动到原材料存放容器
             robotLib.move(sides.top)
@@ -49,6 +50,8 @@ local craftingThread = thread.create(function()
                 robotLib.move(sides.left, 6)
                 robotLib.move(sides.front, 5)
                 robotLib.move(sides.top)
+            else
+                enabled = false
             end
 
             -- recipe.initCrafting(robotLib.pos)

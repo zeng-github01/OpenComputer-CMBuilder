@@ -84,10 +84,11 @@ local function getFacing()
     return navigation.getFacing()
 end
 
-local function selectItem(itemName)
+local function selectItem(itemName,damage)
+    local damage = damage or 0
     for slot = 1, getInternalInventorySize() do
         local stack = getStackInInternalSlot(slot)
-        if stack and stack.name == itemName then
+        if stack and stack.name == itemName and stack.damage == damage then
             select(slot)
             return true
         end

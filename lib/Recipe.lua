@@ -38,8 +38,6 @@ local function matchRecipe()
             materialMatches[i] = false
         end
 
-        local overstack = false
-
         -- 遍历机器人的所有物品槽
         for slot = 1, robotLib.getInternalInventorySize() do
             local stack = robotLib.getStackInInternalSlot(slot)
@@ -47,10 +45,6 @@ local function matchRecipe()
                 if stack and stack.name == material.name and stack.damage == material.damage then
                     materialMatches[i] = true -- 标记找到匹配的材料
                 end
-            end
-            if stack and materials[slot] == nil then
-                overstack = true
-                break
             end
         end
 
@@ -64,7 +58,7 @@ local function matchRecipe()
         end
 
         -- 如果所有材料都匹配，则返回产物的ID和damage值
-        if not overstack and allMatched then
+        if allMatched then
             local itemName = product.name:match(":(.+)$")
             return itemName .. "#" .. product.damage , catalyst -- 返回匹配的合成表产物的ID和damage值
         end
@@ -98,6 +92,8 @@ end
 
 -- 自定义处理每个格子的内容
 local function process_cell_content(relativeX, relativeY, relativeZ, cell_content)
+    -- print(string.format("position: x:%s,y:%s,z:%s",relativeX,relativeY,relativeZ))
+    -- print("content".. cell_content)
     if cell_content == "air" then
         return
     end
@@ -109,10 +105,14 @@ local function process_cell_content(relativeX, relativeY, relativeZ, cell_conten
     -- 获取机器人当前的世界坐标
     local currentWorldPos = robotLib.pos
 
+    print(string.format("robot position -> x:%s, y:%s ,z:%s" , currentWorldPos.x,currentWorldPos.y,currentWorldPos.z))
+
     -- 计算从当前位置到目标位置的移动距离
     local moveX = targetWorldX - currentWorldPos.x
     local moveY = targetWorldY - currentWorldPos.y
     local moveZ = targetWorldZ - currentWorldPos.z
+
+    print(string.format("move -> x:%s , y:%s , z:%s", moveX,moveY,moveZ))
 
     -- 移动到正确的位置
     if moveZ > 0 then
@@ -139,17 +139,12 @@ local function process_cell_content(relativeX, relativeY, relativeZ, cell_conten
 end
 
 local function processRecipe()
-    print("process")
     local recipe = readJson(recipeName)
-    print(recipe)
     for y, xLayer in ipairs(recipe) do
-        print("y" .. y)
         -- 遍历x层
         for x, zLayer in ipairs(xLayer) do
-            print("x" .. x)
             -- 遍历z层
             for z, block in ipairs(zLayer) do
-                print("process_cell_z" .. z)
                 process_cell_content(x, y, z, block)
             end
         end
