@@ -100,12 +100,12 @@ local function detectBlocked(side)
     local facing = getFacing()
     local turnTimes = 0
 
-    if facing == sides.top then
+    if side == sides.top then
         local isBlocked, _ = robot.detectUp()
         return isBlocked
     end
 
-    if facing == sides.bottom then
+    if side == sides.bottom then
         local isBlocked,_ = robot.detectDown()
         return isBlocked
     end
@@ -121,16 +121,6 @@ local function detectBlocked(side)
         end
     end
     return isBlocked
-end
-
-local function turnTo(side)
-    if side == sides.front or side == sides.bottom  then
-        return
-    end
-    local facing = getFacing()
-    while facing ~= side do
-        robot.turnRight()
-    end
 end
 
 -- 更新Pos对象
@@ -154,67 +144,36 @@ end
 local function move(direction, steps)
     local steps = steps or 1
 
-    -- 将机器人朝向复位为前方
-
-    while not (getFacing() == sides.front) do
-        robot.turnRight()
-    end
-
     if direction == sides.front then
         for i = 1, steps do
-            while not detectBlocked(direction) do
-                robot.forward()
-            end
+            robot.forward()
         end
     elseif direction == sides.back then
         for i = 1, steps do
-            while not detectBlocked(direction) do
-                robot.back()
-            end     
+            robot.back()     
         end
     elseif direction == sides.top then
         for i = 1, steps do
-            while not detectBlocked(direction) do
-                robot.up()                
-            end
+            robot.up()    
         end
     elseif direction == sides.bottom then
         for i = 1, steps do
-            while not detectBlocked(direction) do
-                robot.down()                
-            end
+            robot.down()
         end
     elseif direction == sides.left then
         robot.turnLeft()
         for i = 1, steps do
-            while not detectBlocked(sides.front) do
-                robot.forward()     
-            end
+            robot.forward()
         end
         robot.turnRight()
     elseif direction == sides.right then
         robot.turnRight()
         for i = 1, steps do
-            while not detectBlocked(sides.front) do
-                robot.forward() 
-            end
+            robot.forward() 
         end
         robot.turnLeft()
     end
     updatePos(direction, steps)
-end
-
-local function moveWithDetect(side, steps)
-    local steps = steps or 1
-    for i = 1, steps do
-        if detectBlocked(side) then
-            for i = 2, 5 do
-                if not detectBlocked(i) then
-                    turnTo(i)
-                end
-            end
-        end
-    end    
 end
 
 local function restPosition()
@@ -260,6 +219,5 @@ return {
     restPosition = restPosition,
     getFacing = getFacing,
     selectItem = selectItem,
-    detectBlocked = detectBlocked,
-    turnTo = turnTo
+    detectBlocked = detectBlocked
 }

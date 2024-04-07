@@ -1,8 +1,8 @@
 [
   [
-    ["minecraft:iron_block","air","air","air","air"]
+    ["minecraft:iron_block"]
   ],
   [
-    ["minecraft:redstone","air","air","air","air"]
+    ["minecraft:redstone"]
   ]
 ]

@@ -101,11 +101,10 @@ local function process_cell_content(relativeX, relativeY, relativeZ, cell_conten
     if cell_content == "air" then
         return
     end
-    print("process crafing")
     -- 计算目标位置的世界坐标
-    local targetWorldX = craftingOrigin.x + relativeX
-    local targetWorldY = craftingOrigin.y + relativeY
-    local targetWorldZ = craftingOrigin.z + relativeZ
+    local targetWorldX = craftingOrigin.x + relativeX -1
+    local targetWorldY = craftingOrigin.y + relativeY -1
+    local targetWorldZ = craftingOrigin.z + relativeZ -1
 
     -- 获取机器人当前的世界坐标
     local currentWorldPos = robotLib.pos
@@ -133,43 +132,32 @@ local function process_cell_content(relativeX, relativeY, relativeZ, cell_conten
     elseif moveX < 0 then
         robotLib.move(sides.back, -moveX)
     end
-
-    -- 遍历机器人的内部存储
-    for slot = 1, robotLib.getInternalInventorySize() do
-        local stack = robotLib.getStackInInternalSlot(slot)
-        -- 检查当前槽位的物品是否与格子内容匹配
-        if stack and stack.name == cell_content then
-            -- 选择当前的槽位
-            robotLib.select(slot)
-            -- 向下摆放方块
-            robotLib.placeDown()
-            -- 可以在这里添加更多的逻辑，例如记录位置或更新状态
-            break -- 找到匹配项后，跳出循环
-        end
+    
+    if robotLib.selectItem(cell_content) then
+        robotLib.placeDown()
     end
 end
 
 local function processRecipe()
-    --
     print("process")
     local recipe = readJson(recipeName)
     print(recipe)
-    for y, zLayer in ipairs(recipe) do
+    for y, xLayer in ipairs(recipe) do
         print("y" .. y)
-        -- 遍历Z层
-        for z, xLayer in ipairs(zLayer) do
-            print("z" .. z)
-            -- 遍历X层
-            for x, block in ipairs(xLayer) do
-                print("process_cell_x" .. x)
+        -- 遍历x层
+        for x, zLayer in ipairs(xLayer) do
+            print("x" .. x)
+            -- 遍历z层
+            for z, block in ipairs(zLayer) do
+                print("process_cell_z" .. z)
                 process_cell_content(x, y, z, block)
             end
         end
     end
 
     if catalyst then
-        -- 向上移动四格
-        robotLib.move(sides.top, 4)
+        -- 向上移动五格
+        robotLib.move(sides.top, 5)
         -- 丢下催化剂
         for catalystSlot = 1, robotLib.getInternalInventorySize() do
             local catalystStack = robotLib.getStackInInternalSlot(catalystSlot)
