@@ -19,7 +19,7 @@ local function getCraftingPattern(row)
     for i = 1, 7 do  -- 前7个格子是原材料
         local item = database.get(row * 9 - 9 + i)
         if item then -- 如果格子不为空，则添加到材料列表
-            materials[i] = item
+            table.insert(materials,item)
         end
     end
     catalyst = database.get(row * 9 - 9 + 8) -- 第8个格子是催化剂
