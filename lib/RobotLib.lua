@@ -177,7 +177,7 @@ local function move(direction, steps)
     updatePos(direction, steps)
 end
 
-local function restPosition()
+local function resetPosition()
     local origin = Pos:new(0, 0, 0)
     if pos.x > origin.x then
         move(sides.back, pos.x - origin.x)
@@ -217,7 +217,7 @@ return {
     suck = suck,
     suckDown = suckDown,
     suckUp = suckUp,
-    restPosition = restPosition,
+    resetPosition = resetPosition,
     getFacing = getFacing,
     selectItem = selectItem,
     detectBlocked = detectBlocked

@@ -47,7 +47,7 @@ local function runCrafting()
             recipe.processRecipe()
 
             -- 回到原点
-            robotLib.restPosition()
+            robotLib.resetPosition()
 
             -- 等待3秒钟
             os.sleep(3)
