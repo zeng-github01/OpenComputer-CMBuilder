@@ -60,6 +60,7 @@ local function matchRecipe()
             for i, material in ipairs(materials) do
                 if stack and stack.name == material.name and stack.damage == material.damage then
                     materialMatches[i] = true -- 标记找到匹配的材料
+                    break
                 end
             end
         end
