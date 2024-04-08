@@ -9,7 +9,7 @@ local recipe = require("Recipe")
 
 -- 创建一个新的线程来监听键盘事件
 local function listenForKeyboard()
-    print("key_down listening")
+    -- print("key_down listening")
     while true do
         local name, address, char, key, player = event.pull("key_down")
         if (key == keyboard.keys.q) then
@@ -19,11 +19,7 @@ local function listenForKeyboard()
     end
 end
 
--- 启动键盘监听线程
-local keybordThread = thread.create(listenForKeyboard)
-
--- 检查是否有红石信号
-local craftingThread = thread.create(function()
+local function runCrafting()
     while true do
         if rs.getInput(sides.right) > 0 then
             -- 移动到原材料存放容器
@@ -58,6 +54,12 @@ local craftingThread = thread.create(function()
         end
         os.sleep(0.05)
     end
-end)
+end
 
-thread.waitForAny({ keybordThread })
+-- 启动键盘监听线程
+local keybordThread = thread.create(listenForKeyboard)
+
+-- 检查是否有红石信号
+local craftingThread = thread.create(runCrafting)
+
+thread.waitForAll({keybordThread})
