@@ -46,8 +46,7 @@ local craftingThread = thread.create(function()
             robotLib.move(sides.left, 6)
             robotLib.move(sides.front, 5)
             robotLib.move(sides.top)
-
-            recipe.initCrafting(robotLib.pos)
+            
             recipe.processRecipe()
 
             -- 回到原点

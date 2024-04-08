@@ -5,11 +5,27 @@ local json = require("json")
 local Pos = require("Pos")
 local filesystem = require("filesystem")
 local sides = require("sides")
+local rs = component.redstone
 
 local recipePath = "/usr/bin/recipe/"
-local craftingOrigin
-local recipeName
-local catalyst
+
+local craftingPos = Pos:new(1,1,1)
+
+local function updatePos(direction, steps)
+    if direction == sides.front then
+        craftingPos.x = craftingPos.x + steps
+    elseif direction == sides.back then
+        craftingPos.x = craftingPos.x - steps
+    elseif direction == sides.top then
+        craftingPos.y = craftingPos.y + steps
+    elseif direction == sides.bottom then
+        craftingPos.y = craftingPos.y - steps
+    elseif direction == sides.left then
+        craftingPos.z = craftingPos.z - steps
+    elseif direction == sides.right then
+        craftingPos.z = craftingPos.z + steps
+    end
+end
 
 -- 从数据库中获取合成表信息，跳过空的格子
 local function getCraftingPattern(row)
@@ -66,11 +82,6 @@ local function matchRecipe()
     return nil -- 没有匹配的合成表
 end
 
-local function initCrafting(pos)
-    craftingOrigin = pos
-    recipeName, catalyst = matchRecipe()
-end
-
 local function readJson(filename)
     local fullPath = recipePath .. filename .. ".json"
 
@@ -92,45 +103,46 @@ end
 
 -- 自定义处理每个格子的内容
 local function process_cell_content(relativeX, relativeY, relativeZ, cell_content)
-    -- print(string.format("position: x:%s,y:%s,z:%s",relativeX,relativeY,relativeZ))
-    -- print("content".. cell_content)
     if cell_content == "air" then
         return
     end
-    -- 计算目标位置的世界坐标
-    local targetWorldX = craftingOrigin.x + relativeX -1
-    local targetWorldY = craftingOrigin.y + relativeY -1
-    local targetWorldZ = craftingOrigin.z + relativeZ -1
-
-    -- 获取机器人当前的世界坐标
-    local currentWorldPos = robotLib.pos
-
-    print(string.format("robot position -> x:%s, y:%s ,z:%s" , currentWorldPos.x,currentWorldPos.y,currentWorldPos.z))
+    
 
     -- 计算从当前位置到目标位置的移动距离
-    local moveX = targetWorldX - currentWorldPos.x
-    local moveY = targetWorldY - currentWorldPos.y
-    local moveZ = targetWorldZ - currentWorldPos.z
+    local moveX = relativeX - craftingPos.x
+    local moveY = relativeY - craftingPos.y
+    local moveZ = relativeZ - craftingPos.z
 
-    print(string.format("move -> x:%s , y:%s , z:%s", moveX,moveY,moveZ))
+    -- print(string.format("move -> x:%s , y:%s , z:%s", moveX,moveY,moveZ))
 
+    
     -- 移动到正确的位置
-    if moveZ > 0 then
-        robotLib.move(sides.right, moveZ)
-    elseif moveZ < 0 then
-        robotLib.move(sides.left, -moveZ)
-    end
-
     if moveY > 0 then
         robotLib.move(sides.top, moveY)
+        updatePos(sides.top, moveY)
     elseif moveY < 0 then
         robotLib.move(sides.bottom, -moveY)
+        updatePos(sides.bottom,-moveY)
     end
 
     if moveX > 0 then
         robotLib.move(sides.front, moveX)
+        updatePos(sides.front, moveX)
     elseif moveX < 0 then
         robotLib.move(sides.back, -moveX)
+        updatePos(sides.back, -moveX)
+    end
+
+    if moveZ > 0 then
+        robotLib.move(sides.right, moveZ)
+        updatePos(sides.right,moveZ)
+    elseif moveZ < 0 then
+        robotLib.move(sides.left, -moveZ)
+        updatePos(sides.left, -moveZ)
+    end
+
+    if cell_content == "minecraft:hopper" then
+        rs.setOutput(sides.bottom,10)
     end
     
     if robotLib.selectItem(cell_content) then
@@ -139,13 +151,15 @@ local function process_cell_content(relativeX, relativeY, relativeZ, cell_conten
 end
 
 local function processRecipe()
+    local recipeName, catalyst = matchRecipe()
+    craftingPos = Pos:new(1,1,1)
     local recipe = readJson(recipeName)
     for y, xLayer in ipairs(recipe) do
         -- 遍历x层
         for x, zLayer in ipairs(xLayer) do
             -- 遍历z层
             for z, block in ipairs(zLayer) do
-                process_cell_content(x, y, z, block)
+                process_cell_content(x, y, z, block) 
             end
         end
     end
@@ -163,12 +177,11 @@ local function processRecipe()
             end
         end
     end
+    rs.setOutput(sides.bottom,0)
 end
 
 
 
 return {
-    initCrafting = initCrafting,
-    processRecipe = processRecipe,
-    matchRecipe = matchRecipe
+    processRecipe = processRecipe
 }

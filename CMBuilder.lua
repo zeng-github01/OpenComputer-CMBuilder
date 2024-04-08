@@ -104,10 +104,12 @@ local craftingThread = thread.create(function()
                 robotLib.move(sides.right)
 
                 if robotLib.selectItem("minecraft:hopper") then
+                    rs.setOutput(sides.bottom,10)
                     robotLib.placeDown()
                 end
 
                 robotLib.move(sides.top, 5)
+                rs.setOutput(sides.bottom,0)
                 if robotLib.selectItem("minecraft:redstone") then
                     robotLib.dropDown(1)
                 end
