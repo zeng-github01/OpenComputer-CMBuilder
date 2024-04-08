@@ -84,10 +84,11 @@ local function getFacing()
     return navigation.getFacing()
 end
 
-local function selectItem(itemName)
+local function selectItem(itemName,damage)
+    local damage = damage or 0
     for slot = 1, getInternalInventorySize() do
         local stack = getStackInInternalSlot(slot)
-        if stack and stack.name == itemName then
+        if stack and stack.name == itemName and stack.damage == damage then
             select(slot)
             return true
         end
@@ -176,7 +177,7 @@ local function move(direction, steps)
     updatePos(direction, steps)
 end
 
-local function restPosition()
+local function resetPosition()
     local origin = Pos:new(0, 0, 0)
     if pos.x > origin.x then
         move(sides.back, pos.x - origin.x)
@@ -216,7 +217,7 @@ return {
     suck = suck,
     suckDown = suckDown,
     suckUp = suckUp,
-    restPosition = restPosition,
+    resetPosition = resetPosition,
     getFacing = getFacing,
     selectItem = selectItem,
     detectBlocked = detectBlocked

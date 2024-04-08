@@ -1,0 +1,36 @@
+[
+    [
+        [
+            "minecraft:redstone",
+            "minecraft:redstone",
+            "minecraft:redstone"
+        ],
+        [
+            "minecraft:redstone",
+            "compactmachines3:wallbreakable",
+            "minecraft:redstone"
+        ],
+        [
+            "minecraft:redstone",
+            "minecraft:redstone",
+            "minecraft:redstone"
+        ]
+    ],
+    [
+        [
+            "air",
+            "air",
+            "air"
+        ],
+        [
+            "air",
+            "minecraft:redstone_block",
+            "air"
+        ],
+        [
+            "air",
+            "air",
+            "air"
+        ]
+    ]
+]
