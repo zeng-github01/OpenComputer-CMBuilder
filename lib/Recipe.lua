@@ -153,7 +153,6 @@ end
 
 local function processRecipe()
     local recipeName, catalyst = matchRecipe()
-    print("crafting" .. recipeName)
     craftingPos = Pos:new(1,1,1)
     local recipe = readJson(recipeName)
     for y, xLayer in ipairs(recipe) do
