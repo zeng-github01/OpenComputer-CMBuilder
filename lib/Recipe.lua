@@ -58,9 +58,11 @@ local function matchRecipe()
         for slot = 1, robotLib.getInternalInventorySize() do
             local stack = robotLib.getStackInInternalSlot(slot)
             for i, material in ipairs(materials) do
-                if stack and stack.name == material.name and stack.damage == material.damage then
-                    materialMatches[i] = true -- 标记找到匹配的材料
-                    break
+                if stack and not materialMatches[i] then
+                    if stack.name == material.name and stack.damage == material.damage then
+                        materialMatches[i] = true -- 标记找到匹配的材料
+                        break
+                    end
                 end
             end
         end
