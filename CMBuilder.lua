@@ -12,7 +12,7 @@ local sides = require("sides")
 -- 创建一个新的线程来监听键盘事件
 local function listenForKeyboard()
     while true do
-        local name, address, char, key, player = event.pull('key_down')
+        local name, address, char, key, player = term.pull('key_down')
         if (key == keyboard.keys.q) then
             break
         end
@@ -45,7 +45,7 @@ local function runCrafting()
             robotLib.move(sides.front, 5)
             robotLib.move(sides.top)
 
-            recipe.processRecipe(sides.bottom)
+            recipe.processRecipe()
 
             -- 回到原点
             robotLib.resetPosition()

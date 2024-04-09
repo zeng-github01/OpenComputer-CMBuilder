@@ -45,7 +45,7 @@ local function getCraftingPattern(row)
 end
 
 -- 比对机器人内部物品堆栈与合成表
-local function matchRecipe(inventoryFacing)
+local function matchRecipe()
     for row = 1, 9 do              -- 假设数据库每9个格子为一行
         local materials, catalyst, product = getCraftingPattern(row)
         local materialMatches = {} -- 用于跟踪每种材料是否匹配
@@ -54,6 +54,20 @@ local function matchRecipe(inventoryFacing)
         for i = 1, #materials do
             materialMatches[i] = false
         end
+
+        -- 遍历机器人的所有物品槽
+        for slot = 1, robotLib.getInternalInventorySize() do
+            local stack = robotLib.getStackInInternalSlot(slot)
+            for i, material in ipairs(materials) do
+                if stack and not materialMatches[i] then
+                    if stack.name == material.name and stack.damage == material.damage then
+                        materialMatches[i] = true -- 标记找到匹配的材料
+                        break
+                    end
+                end
+            end
+        end
+
 
         -- 检查是否所有材料都找到了匹配项
         local allMatched = true
@@ -138,10 +152,10 @@ local function process_cell_content(relativeX, relativeY, relativeZ, cell_conten
     end
 end
 
-local function processRecipe(inventoryFacing)
-    -- term.clear()
-    local recipeName, catalyst = matchRecipe(inventoryFacing)
-    -- term.write("crafting:" .. recipeName, true)
+local function processRecipe()
+    term.clear()
+    local recipeName, catalyst = matchRecipe()
+    term.write("press 'q' to exit")
     craftingPos = Pos:new(1, 1, 1)
     local recipe = readJson(recipeName)
     for y, xLayer in ipairs(recipe) do
