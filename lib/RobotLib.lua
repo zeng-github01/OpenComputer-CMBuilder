@@ -3,7 +3,7 @@ local robot = require("robot")
 local sides = require("sides")
 local component = require("component")
 local inventory_controller = component.inventory_controller
-local navigation = component.navigation
+-- local navigation = component.navigation
 
 -- 导入坐标定位脚本
 local Pos = require("Pos")
@@ -80,9 +80,9 @@ local function suckDown(count)
     robot.suckDown(count)
 end
 
-local function getFacing()
-    return navigation.getFacing()
-end
+-- local function getFacing()
+--     return navigation.getFacing()
+-- end
 
 local function selectItem(itemName,damage)
     local damage = damage or 0
@@ -97,32 +97,32 @@ local function selectItem(itemName,damage)
     return false
 end
 
-local function detectBlocked(side)
-    local facing = getFacing()
-    local turnTimes = 0
+-- local function detectBlocked(side)
+--     local facing = getFacing()
+--     local turnTimes = 0
 
-    if side == sides.top then
-        local isBlocked, _ = robot.detectUp()
-        return isBlocked
-    end
+--     if side == sides.top then
+--         local isBlocked, _ = robot.detectUp()
+--         return isBlocked
+--     end
 
-    if side == sides.bottom then
-        local isBlocked,_ = robot.detectDown()
-        return isBlocked
-    end
+--     if side == sides.bottom then
+--         local isBlocked,_ = robot.detectDown()
+--         return isBlocked
+--     end
 
-    while (facing ~= side) do
-        robot.turnRight()
-        turnTimes = turnTimes +1
-    end
-    local isBlocked,_ = robot.detect()
-    if turnTimes > 0 then
-        for i = 1, turnTimes do
-            robot.turnLeft()
-        end
-    end
-    return isBlocked
-end
+--     while (facing ~= side) do
+--         robot.turnRight()
+--         turnTimes = turnTimes +1
+--     end
+--     local isBlocked,_ = robot.detect()
+--     if turnTimes > 0 then
+--         for i = 1, turnTimes do
+--             robot.turnLeft()
+--         end
+--     end
+--     return isBlocked
+-- end
 
 -- 更新Pos对象
 local function updatePos(direction, steps)
@@ -218,7 +218,7 @@ return {
     suckDown = suckDown,
     suckUp = suckUp,
     resetPosition = resetPosition,
-    getFacing = getFacing,
+    -- getFacing = getFacing,
     selectItem = selectItem,
-    detectBlocked = detectBlocked
+    -- detectBlocked = detectBlocked
 }
