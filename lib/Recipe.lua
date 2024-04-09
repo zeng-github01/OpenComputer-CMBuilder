@@ -168,8 +168,9 @@ local function processRecipe()
     end
 
     if catalyst then
-        -- 向上移动五格
-        robotLib.move(sides.top, 5)
+        local upSteps = 7 - craftingPos.y
+        -- 向上移动指定格数
+        robotLib.move(sides.top, upSteps)
         -- 丢下催化剂
         for catalystSlot = 1, robotLib.getInternalInventorySize() do
             local catalystStack = robotLib.getStackInInternalSlot(catalystSlot)
