@@ -6,10 +6,11 @@ local Pos = require("Pos")
 local filesystem = require("filesystem")
 local sides = require("sides")
 local rs = component.redstone
+local term = require("term")
 
 local recipePath = "/usr/bin/recipe/"
 
-local craftingPos = Pos:new(1,1,1)
+local craftingPos = Pos:new(1, 1, 1)
 
 local function updatePos(direction, steps)
     if direction == sides.front then
@@ -35,7 +36,7 @@ local function getCraftingPattern(row)
     for i = 1, 7 do  -- 前7个格子是原材料
         local item = database.get(row * 9 - 9 + i)
         if item then -- 如果格子不为空，则添加到材料列表
-            table.insert(materials,item)
+            table.insert(materials, item)
         end
     end
     catalyst = database.get(row * 9 - 9 + 8) -- 第8个格子是催化剂
@@ -44,27 +45,14 @@ local function getCraftingPattern(row)
 end
 
 -- 比对机器人内部物品堆栈与合成表
-local function matchRecipe()
-    for row = 1, 9 do         -- 假设数据库每9个格子为一行
+local function matchRecipe(inventoryFacing)
+    for row = 1, 9 do              -- 假设数据库每9个格子为一行
         local materials, catalyst, product = getCraftingPattern(row)
         local materialMatches = {} -- 用于跟踪每种材料是否匹配
 
         -- 初始化材料匹配跟踪表
         for i = 1, #materials do
             materialMatches[i] = false
-        end
-
-        -- 遍历机器人的所有物品槽
-        for slot = 1, robotLib.getInternalInventorySize() do
-            local stack = robotLib.getStackInInternalSlot(slot)
-            for i, material in ipairs(materials) do
-                if stack and not materialMatches[i] then
-                    if stack.name == material.name and stack.damage == material.damage then
-                        materialMatches[i] = true -- 标记找到匹配的材料
-                        break
-                    end
-                end
-            end
         end
 
         -- 检查是否所有材料都找到了匹配项
@@ -79,7 +67,7 @@ local function matchRecipe()
         -- 如果所有材料都匹配，则返回产物的ID和damage值
         if allMatched then
             local itemName = product.name:match(":(.+)$")
-            return itemName .. "#" .. product.damage , catalyst -- 返回匹配的合成表产物的ID和damage值
+            return itemName .. "#" .. product.damage, catalyst  -- 返回匹配的合成表产物的ID和damage值
         end
     end
     return nil -- 没有匹配的合成表
@@ -109,23 +97,20 @@ local function process_cell_content(relativeX, relativeY, relativeZ, cell_conten
     if cell_content == "air" then
         return
     end
-    
+
 
     -- 计算从当前位置到目标位置的移动距离
     local moveX = relativeX - craftingPos.x
     local moveY = relativeY - craftingPos.y
     local moveZ = relativeZ - craftingPos.z
 
-    -- print(string.format("move -> x:%s , y:%s , z:%s", moveX,moveY,moveZ))
-
-    
     -- 移动到正确的位置
     if moveY > 0 then
         robotLib.move(sides.top, moveY)
         updatePos(sides.top, moveY)
     elseif moveY < 0 then
         robotLib.move(sides.bottom, -moveY)
-        updatePos(sides.bottom,-moveY)
+        updatePos(sides.bottom, -moveY)
     end
 
     if moveX > 0 then
@@ -138,31 +123,33 @@ local function process_cell_content(relativeX, relativeY, relativeZ, cell_conten
 
     if moveZ > 0 then
         robotLib.move(sides.right, moveZ)
-        updatePos(sides.right,moveZ)
+        updatePos(sides.right, moveZ)
     elseif moveZ < 0 then
         robotLib.move(sides.left, -moveZ)
         updatePos(sides.left, -moveZ)
     end
 
     if cell_content == "minecraft:hopper" then
-        rs.setOutput(sides.bottom,10)
+        rs.setOutput(sides.bottom, 10)
     end
-    
+
     if robotLib.selectItem(cell_content) then
         robotLib.placeDown()
     end
 end
 
-local function processRecipe()
-    local recipeName, catalyst = matchRecipe()
-    craftingPos = Pos:new(1,1,1)
+local function processRecipe(inventoryFacing)
+    -- term.clear()
+    local recipeName, catalyst = matchRecipe(inventoryFacing)
+    -- term.write("crafting:" .. recipeName, true)
+    craftingPos = Pos:new(1, 1, 1)
     local recipe = readJson(recipeName)
     for y, xLayer in ipairs(recipe) do
         -- 遍历x层
         for x, zLayer in ipairs(xLayer) do
             -- 遍历z层
             for z, block in ipairs(zLayer) do
-                process_cell_content(x, y, z, block) 
+                process_cell_content(x, y, z, block)
             end
         end
     end
@@ -181,7 +168,7 @@ local function processRecipe()
             end
         end
     end
-    rs.setOutput(sides.bottom,0)
+    rs.setOutput(sides.bottom, 0)
 end
 
 
