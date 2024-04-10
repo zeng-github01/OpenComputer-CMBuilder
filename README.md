@@ -34,6 +34,8 @@ robotLib.move(sides.left,5)
 
 ```
 
+This is default position
+
 ![My Settings](./images/example.png)
 
 ## Database Configuration
