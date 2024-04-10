@@ -5,7 +5,7 @@ local event = require("event")
 local thread = require("thread")
 local term = require("term")
 local rs = component.redstone
-local keyboard = component.keyboard
+local keyboard = require("keyboard")
 local recipe = require("Recipe")
 local sides = require("sides")
 
@@ -66,3 +66,4 @@ local craftingThread = thread.create(runCrafting)
 local keybordThread = thread.create(listenForKeyboard)
 
 thread.waitForAny({keybordThread})
+os.exit(0)

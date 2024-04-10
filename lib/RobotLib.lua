@@ -16,6 +16,10 @@ local function getInventorySize(side)
     return inventory_controller.getInventorySize(side)
 end
 
+local function getAllStacks(side)
+    return inventory_controller.getAllStacks(side)
+end
+
 local function getStackInSlot(side, slot)
     return inventory_controller.getStackInSlot(side, slot)
 end
@@ -201,6 +205,7 @@ return {
     move = move,
     getInventorySize = getInventorySize,
     getStackInSlot = getStackInSlot,
+    getAllStacks = getAllStacks,
     getStackInInternalSlot = getStackInInternalSlot,
     getInternalInventorySize = getInternalInventorySize,
     equip = equip,
