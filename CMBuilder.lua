@@ -24,6 +24,7 @@ local function runCrafting()
     while true do
         if rs.getInput(sides.right) > 0 then
             -- 移动到原材料存放容器上方
+            -- Moved above the raw material storage container
             robotLib.move(sides.top)
             robotLib.move(sides.right, 2)
 
@@ -41,6 +42,7 @@ local function runCrafting()
             end
 
             -- 移动到工作区域的起始点 一层左下角
+            -- Move to the starting point of the crafting area, the lower left corner of the first layer
             robotLib.move(sides.left, 6)
             robotLib.move(sides.front, 5)
             robotLib.move(sides.top)
