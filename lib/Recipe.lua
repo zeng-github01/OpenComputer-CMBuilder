@@ -6,7 +6,7 @@ local Pos = require("Pos")
 local filesystem = require("filesystem")
 local sides = require("sides")
 local rs = component.redstone
-local term = require("term")
+-- local term = require("term")
 
 local recipePath = "/usr/bin/recipe/"
 
@@ -111,11 +111,15 @@ local function makePaste()
     local recipeName, catalyst = matchRecipe()
     for slot = 1, robotLib.getInternalInventorySize() do
         local pasteStack = robotLib.getStackInInternalSlot(slot)
-        if pasteStack and pasteStack.name == "buildinggadgets:copypastetool" and pasteStack.lable == recipeName then
-            robotLib.select(slot)
-            equipSlot = slot
-            robotLib.equip()
-            break            
+        if pasteStack then
+            print("lable".. pasteStack.lable)
+            print("name" .. pasteStack.name)
+            if pasteStack.name == "buildinggadgets:copypastetool" and pasteStack.lable == recipeName then
+                robotLib.select(slot)
+                equipSlot = slot
+                robotLib.equip()
+                break            
+            end
         end
     end
     robotLib.use()
@@ -184,9 +188,7 @@ local function process_cell_content(relativeX, relativeY, relativeZ, cell_conten
 end
 
 local function processRecipe()
-    term.clear()
     local recipeName, catalyst = matchRecipe()
-    term.write("press 'q' to exit")
     craftingPos = Pos:new(1, 1, 1)
     local recipe = readJson(recipeName)
     for y, xLayer in ipairs(recipe) do
