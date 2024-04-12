@@ -106,6 +106,37 @@ local function readJson(filename)
     end
 end
 
+local function makePaste()
+    local equipSlot
+    local recipeName, catalyst = matchRecipe()
+    for slot = 1, robotLib.getInternalInventorySize() do
+        local pasteStack = robotLib.getStackInInternalSlot(slot)
+        if pasteStack and pasteStack.name == "buildinggadgets:copypastetool" and pasteStack.lable == recipeName then
+            robotLib.select(slot)
+            equipSlot = slot
+            robotLib.equip()
+            break            
+        end
+    end
+    robotLib.use()
+    if catalyst then
+        local upSteps = 7 - craftingPos.y
+        -- 向上移动指定格数
+        robotLib.move(sides.top, upSteps)
+        -- 丢下催化剂
+        for catalystSlot = 1, robotLib.getInternalInventorySize() do
+            local catalystStack = robotLib.getStackInInternalSlot(catalystSlot)
+            if catalystStack and catalystStack.name == catalyst.name and catalystStack.damage == catalyst.damage then
+                robotLib.select(catalystSlot)
+                robotLib.drop()
+                break
+            end
+        end
+    end
+    robotLib.select(equipSlot)
+    robotLib.equip()
+end
+
 -- 自定义处理每个格子的内容
 local function process_cell_content(relativeX, relativeY, relativeZ, cell_content)
     if cell_content == "air" then
@@ -188,5 +219,6 @@ end
 
 
 return {
-    processRecipe = processRecipe
+    processRecipe = processRecipe,
+    makePaste = makePaste
 }

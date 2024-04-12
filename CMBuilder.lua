@@ -9,6 +9,8 @@ local keyboard = require("keyboard")
 local recipe = require("Recipe")
 local sides = require("sides")
 
+local pasteMode = false
+
 -- 创建一个新的线程来监听键盘事件
 local function listenForKeyboard()
     while true do
@@ -40,14 +42,21 @@ local function runCrafting()
                     break
                 end
             end
+            if not pasteMode then
+                -- 移动到工作区域的起始点 一层左下角上方
+                -- Move to the starting point of the crafting area, above the lower left corner of the first layer
+                robotLib.move(sides.left, 6)
+                robotLib.move(sides.front, 5)
+                robotLib.move(sides.top)
 
-            -- 移动到工作区域的起始点 一层左下角
-            -- Move to the starting point of the crafting area, the lower left corner of the first layer
-            robotLib.move(sides.left, 6)
-            robotLib.move(sides.front, 5)
-            robotLib.move(sides.top)
-
-            recipe.processRecipe()
+                recipe.processRecipe()
+            else
+                -- 移动到工作区域的起始点 一层左下角后一格
+                -- Move to the starting point of the crafting area, one block behind the lower left corner of the first layer
+                robotLib.move(sides.left, 6)
+                robotLib.move(sides.front, 4)
+                recipe.makePaste()
+            end
 
             -- 回到原点
             robotLib.resetPosition()

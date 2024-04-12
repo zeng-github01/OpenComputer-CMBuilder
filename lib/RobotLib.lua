@@ -32,10 +32,6 @@ local function getInternalInventorySize()
    return robot.inventorySize()
 end
 
-local function equip()
-    return robot.equip()
-end
-
 local function swing(side, sneaky)
     return robot.swing(side, sneaky)
 end
@@ -57,7 +53,23 @@ local function dropDown(count)
 end
 
 local function select(slot)
-    robot.select(slot)
+    return robot.select(slot)
+end
+
+local function equip()
+    return inventory_controller.equip()
+end
+
+local function use(side,sneaky,duration)
+    return robot.use(side,sneaky,duration)
+end
+
+local function useUp(side,sneaky,duration)
+    return robot.useUp(side,sneaky,duration)
+end
+
+local function useDown(side,sneaky,duration)
+    return robot.useDown(side,sneaky,duration)
 end
 
 local function place(side, sneaky)
@@ -225,5 +237,8 @@ return {
     resetPosition = resetPosition,
     -- getFacing = getFacing,
     selectItem = selectItem,
+    use = use,
+    useDown,useDown,
+    useUp = useUp
     -- detectBlocked = detectBlocked
 }
