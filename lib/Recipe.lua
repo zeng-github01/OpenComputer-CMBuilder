@@ -6,7 +6,6 @@ local Pos = require("Pos")
 local filesystem = require("filesystem")
 local sides = require("sides")
 local rs = component.redstone
--- local term = require("term")
 
 local recipePath = "/usr/bin/recipe/"
 
@@ -107,21 +106,21 @@ local function readJson(filename)
 end
 
 local function makePaste()
-    local equipSlot
+    -- local equipSlot
     local recipeName, catalyst = matchRecipe()
-    for slot = 1, robotLib.getInternalInventorySize() do
-        local pasteStack = robotLib.getStackInInternalSlot(slot)
-        if pasteStack then
-            print("lable".. pasteStack.lable)
-            print("name" .. pasteStack.name)
-            if pasteStack.name == "buildinggadgets:copypastetool" and pasteStack.lable == recipeName then
-                robotLib.select(slot)
-                equipSlot = slot
-                robotLib.equip()
-                break            
-            end
-        end
-    end
+    -- for slot = 1, robotLib.getInternalInventorySize() do
+    --     local pasteStack = robotLib.getStackInInternalSlot(slot)
+    --     if pasteStack then
+    --         print("lable".. pasteStack.lable)
+    --         print("name" .. pasteStack.name)
+    --         if pasteStack.name == "buildinggadgets:copypastetool" and pasteStack.lable == recipeName then
+    --             robotLib.select(slot)
+    --             equipSlot = slot
+    --             robotLib.equip()
+    --             break            
+    --         end
+    --     end
+    -- end
     robotLib.use()
     if catalyst then
         local upSteps = 7 - craftingPos.y
@@ -137,8 +136,8 @@ local function makePaste()
             end
         end
     end
-    robotLib.select(equipSlot)
-    robotLib.equip()
+    -- robotLib.select(equipSlot)
+    -- robotLib.equip()
 end
 
 -- 自定义处理每个格子的内容

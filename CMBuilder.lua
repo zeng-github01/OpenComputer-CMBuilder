@@ -73,13 +73,9 @@ local function runPasting()
 
             -- 取出容器内的物品到机器人背包
             for i = 1, minSlots do
-                local stack = robotLib.getStackInSlot(sides.bottom, i)
-                local internalStack = robotLib.getStackInInternalSlot(i)
-                if stack and not internalStack then
+                if robotLib.getStackInSlot(sides.bottom, i) ~= nil then
                     robotLib.select(i)
                     robotLib.suckFromSlot(sides.bottom, i)
-                elseif stack and internalStack then
-                    robotAPI.transferTo(i+1)
                 end
             end
 
