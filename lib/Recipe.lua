@@ -88,20 +88,21 @@ end
 
 local function readJson(filename)
     local fullPath = recipePath .. filename .. ".json"
+    local fullPathRaw = recipePath .. string.gsub(filename,"%23","#") .. ".json"
 
     -- 检查文件是否存在
-    if filesystem.exists(fullPath) and not filesystem.isDirectory(fullPath) then
-        local file = io.open(fullPath, "r")
+    if (filesystem.exists(fullPath) or filesystem.exists(fullPathRaw)) and not filesystem.isDirectory(fullPath) then
+        local file = io.open(fullPath, "r") or io.open(fullPathRaw, "r")
         if file then
             local content = file:read("*a")
             file:close()
             -- 将文件内容解析为 Lua 表
             return json.decode(content)
         else
-            error("无法打开文件: " .. fullPath)
+            error("无法打开文件: " .. fullPathRaw)
         end
     else
-        error("文件不存在或路径错误: " .. fullPath)
+        error("文件不存在或路径错误: " .. fullPathRaw)
     end
 end
 
