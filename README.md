@@ -60,5 +60,5 @@ This project is licensed under the MIT License - see the LICENSE.md file for det
 
 ## Credits
 
-Death-123 for [Pos](https://gist.github.com/Death-123/26922e7352580f31b566896b33534127#file-pos-lua)
-actboy168 for [json](https://github.com/actboy168/json.lua)
+- Death-123 for [Pos](https://gist.github.com/Death-123/26922e7352580f31b566896b33534127#file-pos-lua)
+- actboy168 for [json](https://github.com/actboy168/json.lua)
