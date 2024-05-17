@@ -28,7 +28,7 @@ This will allow OPPM to manage the installation, updates, and removal of the sof
 robotLib.move(sides.left,5)
 
 -- Move five steps to right
-robotLib.move(sides.left,5)
+robotLib.move(sides.right,5)
 
 --Definition document for sides: https://ocdoc.cil.li/api:sides
 
