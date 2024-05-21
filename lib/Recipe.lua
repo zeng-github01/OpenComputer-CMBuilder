@@ -80,7 +80,7 @@ local function matchRecipe()
         -- 如果所有材料都匹配，则返回产物的ID和damage值
         if allMatched then
             local itemName = product.name:match(":(.+)$")
-            return itemName .. "%23" .. product.damage, catalyst  -- 返回匹配的合成表产物的ID和damage值
+            return itemName .. "_" .. product.damage, catalyst  -- 返回匹配的合成表产物的ID和damage值
         end
     end
     return nil -- 没有匹配的合成表
@@ -88,21 +88,19 @@ end
 
 local function readJson(filename)
     local fullPath = recipePath .. filename .. ".json"
-    local fullPathRaw = recipePath .. string.gsub(filename,"%23","#") .. ".json"
-
     -- 检查文件是否存在
-    if (filesystem.exists(fullPath) or filesystem.exists(fullPathRaw)) and not filesystem.isDirectory(fullPath) then
-        local file = io.open(fullPath, "r") or io.open(fullPathRaw, "r")
+    if filesystem.exists(fullPath) and not filesystem.isDirectory(fullPath) then
+        local file = io.open(fullPath, "r")
         if file then
             local content = file:read("*a")
             file:close()
             -- 将文件内容解析为 Lua 表
             return json.decode(content)
         else
-            error("无法打开文件: " .. fullPathRaw)
+            error("无法打开文件: " .. fullPath)
         end
     else
-        error("文件不存在或路径错误: " .. fullPathRaw)
+        error("文件不存在或路径错误: " .. fullPath)
     end
 end
 
