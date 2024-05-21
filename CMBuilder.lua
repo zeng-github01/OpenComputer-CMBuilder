@@ -36,7 +36,14 @@ local function runCrafting()
 
             -- 取出容器内的物品到机器人背包
             for i = 1, minSlots do
-                if robotLib.getStackInInternalSlot(i) == nil and robotLib.getStackInSlot(sides.bottom, i) ~= nil then
+                local Existitem = robotLib.getStackInInternalSlot(i)
+                local containerItem = robotLib.getStackInSlot(sides.bottom, i)
+
+                if not containerItem then
+                    break
+                end
+
+                if not Existitem and containerItem then
                     robotLib.select(i)
                     robotLib.suckFromSlot(sides.bottom, i)
                 end
