@@ -83,7 +83,8 @@ end
 
 
 function DroneLib.move(addr, x, y, z)
-    return sendCommand(addr, "move", x, y, z)
+    local args = table.pack(x, y, z) -- 确保参数正确打包
+    return sendCommand(addr, "move", args)
 end
 function DroneLib.placeName(addr, itemName, damage, side)
     local args = table.pack("name", itemName, damage, side) -- 确保参数正确打包
