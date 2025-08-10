@@ -3,44 +3,59 @@
 
 local component = require("component")
 local serialization = require("serialization")
+local event = require("event")
 local modem = component.modem
 local PORT = 4711
 
 local DroneLib = {}
 
--- handler参数名列表，自动适配
-local handler_args = {
-    move = {"x", "y", "z"},
-    place = {"mode", "slot", "side"},
-    drop = {"slot", "side", "n"},
-    suck = {"side"},
-}
-
-local function packArgs(cmd, ...)
-    local t = {}
-    local argnames = handler_args[cmd]
-    local args = {...}
-    if #args == 1 and type(args[1]) == "table" then
-        -- 直接传表
-        for k, v in pairs(args[1]) do
-            t[k] = v
-        end
-    elseif argnames then
-        for i, name in ipairs(argnames) do
-            t[name] = args[i]
-        end
+-- 发送命令并等待回应
+local function packArgs(cmd, args)
+  -- 适配协议，按命令类型打包具名字段
+  local t = {}
+  if cmd == "move" then
+    t.x, t.y, t.z = args[1], args[2], args[3]
+  elseif cmd == "place" then
+    assert(#args >= 3, "Place command requires at least 3 arguments")
+    if args[1] == "name" then
+      t.mode = "name"
+      t.itemName = args[2]
+      t.damage = args[3]
+      t.side = args[4]
+    else
+      t.mode = args[1]
+      t.slot = args[2]
+      t.side = args[3]
     end
-    return t
+  elseif cmd == "drop" then
+    assert(#args >= 3, "Drop command requires at least 3 arguments")
+    -- 支持 mode=name 物品名丢弃
+    if args[1] == "name" then
+      t.mode = "name"
+      t.itemName = args[2]
+      t.damage = args[3]
+      t.side = args[4]
+      t.n = args[5] or 1  -- 默认丢弃1个
+    else
+      t.mode = args[1]
+      t.slot = args[2]
+      t.side = args[3]
+      t.n = args[4] or 1  -- 默认丢弃1个
+    end
+  elseif cmd == "pull" then
+    t.side = args[1]
+  end
+  return t
 end
 
 -- 发送命令并等待ack
-local function sendCommand(droneAddress, cmd, ...)
+local function sendCommand(droneAddress, cmd, args)
     local tag = tostring(math.random(100000, 999999))
-    local params = packArgs(cmd, ...)
+    local params = packArgs(cmd, args)
     local params_string = serialization.serialize(params)
     modem.send(droneAddress, PORT, cmd, params_string, tag)
     while true do
-        local _, _, from, recvPort, _, ackType, ok, recvTag, err = require("event").pull(3, "modem_message")
+        local _, _, from, recvPort, _, ackType, ok, recvTag, err = event.pull(3, "modem_message")
         if recvPort == PORT and ackType == "ack" and recvTag == tag then
             return ok, err
         elseif not _ then
@@ -70,14 +85,25 @@ end
 function DroneLib.move(addr, x, y, z)
     return sendCommand(addr, "move", x, y, z)
 end
-function DroneLib.place(addr, mode, slot, side)
-    return sendCommand(addr, "place", mode, slot, side)
+function DroneLib.placeName(addr, itemName, damage, side)
+    local args = table.pack("name", itemName, damage, side) -- 确保参数正确打包
+    return sendCommand(addr, "place", args)
 end
-function DroneLib.drop(addr, slot, side, n)
-    return sendCommand(addr, "drop", slot, side, n)
+function DroneLib.placeSlot(addr, slot, side)
+    local args = table.pack("slot", slot, side) -- 确保参数正确打包
+    return sendCommand(addr, "place", args)
+end
+function DroneLib.dropSlot(addr, slot, side, n)
+    local args = table.pack("slot", slot, side, n) -- 确保参数正确打包
+    return sendCommand(addr, "drop", args)
+end
+function DroneLib.dropName(addr, itemName, damage, side, n)
+    local args = table.pack("slot", itemName, damage, side, n) -- 确保参数正确打包
+    return sendCommand(addr, "drop", args)
 end
 function DroneLib.suck(addr, side)
-    return sendCommand(addr, "pull", side)
+    local args = table.pack(side) -- 确保参数正确打包
+    return sendCommand(addr, "pull", args)
 end
 function DroneLib.home(addr)
     return sendCommand(addr, "home")

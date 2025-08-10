@@ -88,8 +88,22 @@ function handlers.place(args)
 end
 function handlers.drop(args)
   waitEnergy()
-  drone.select(args.slot or 1)
-  drone.drop(args.side or 3, args.n or 1)
+  if args.mode == "name" then
+    local invCtrl = assert(proxy("inventory_controller"), "inventory_controller component required for itemName mode")
+    local size = drone.inventorySize()
+    for slot = 1, size do
+      local stack = invCtrl.getStackInInternalSlot(slot)
+      if stack and stack.name == args.itemName and (stack.damage == args.damage or args.damage == -1) then
+        drone.select(slot)
+        drone.drop(args.side or 3, args.n or 1)
+        return
+      end
+    end
+    error("Item not found: " .. tostring(args.itemName))
+  elseif args.mode == "slot" then
+    drone.select(args.slot or 1)
+    drone.drop(args.side or 3, args.n or 1)
+  end
 end
 function handlers.suck(args)
   waitEnergy()
