@@ -51,7 +51,7 @@ local function runCrafting()
             -- Moved above the raw material storage container
             local ok, err = droneLib.move(address, -2, 1, 0)
             if ok then
-                
+                print("Moved to the raw material storage container.")
             else
                 error("Failed to move to the raw material storage container: " .. err)
             end

@@ -7,7 +7,7 @@ local filesystem = require("filesystem")
 
 local DroneLib = require("drone.DroneLib")
 
-local recipePath = "recipe/" -- 统一存放配方json
+local recipePath = "/usr/bin/recipe/" -- 统一存放配方json
 local relativePosition = { x = 1, y = 1, z = 1 } -- 用于记录相对位置
 local database = component.database
 local transposer = component.transposer
