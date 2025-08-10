@@ -98,7 +98,7 @@ function DroneLib.dropSlot(addr, slot, side, n)
     return sendCommand(addr, "drop", args)
 end
 function DroneLib.dropName(addr, itemName, damage, side, n)
-    local args = table.pack("slot", itemName, damage, side, n) -- 确保参数正确打包
+    local args = table.pack("name", itemName, damage, side, n) -- 确保参数正确打包
     return sendCommand(addr, "drop", args)
 end
 function DroneLib.suck(addr, side)
