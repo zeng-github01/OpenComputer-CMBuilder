@@ -78,7 +78,7 @@ local function process_cell_content(addr, relativeX, relativeY, relativeZ, cell_
     end
     relativePosition.x, relativePosition.y, relativePosition.z = target.x, target.y, target.z
     -- 放置方块
-    local ok, err = DroneLib.place(addr, {mode="name", itemName=cell_content, damage=-1, side=side})
+    local ok, err = DroneLib.placeName(addr, cell_content, -1, side)
     if not ok then error(err or ("Failed to place block: " .. tostring(cell_content))) end
 end
 
