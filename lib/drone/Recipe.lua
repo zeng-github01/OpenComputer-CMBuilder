@@ -2,7 +2,7 @@
 -- 电脑端用：transposer+database 比对箱子材料，自动匹配配方
 
 local component = require("component")
-local json = require("json.json")
+local json = require("json")
 local filesystem = require("filesystem")
 
 local DroneLib = require("drone.DroneLib")
