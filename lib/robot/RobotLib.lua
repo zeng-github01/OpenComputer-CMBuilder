@@ -6,7 +6,7 @@ local inventory_controller = component.inventory_controller
 -- local navigation = component.navigation
 
 -- 导入坐标定位脚本
-local Pos = require("Pos")
+local Pos = require("robot.Pos")
 
 -- 创建Pos对象
 local pos = Pos:new(0, 0, 0)

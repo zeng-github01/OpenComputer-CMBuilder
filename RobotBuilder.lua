@@ -1,4 +1,4 @@
-local robotLib = require("robotLib")
+local robotLib = require("robot.RobotLib")
 local sides = require("sides")
 local component = require("component")
 local event = require("event")
@@ -6,7 +6,7 @@ local thread = require("thread")
 local term = require("term")
 local rs = component.redstone
 local keyboard = require("keyboard")
-local recipe = require("Recipe")
+local recipe = require("robot.Recipe")
 
 local pasteMode = false --Bug Here: 目前只支持建造模式
 
@@ -31,7 +31,7 @@ local function runCrafting()
             robotLib.move(sides.right, 2)
 
             -- 对容器和机器人背包的插槽数取最小值
-            local minSlots = math.min(robotLib.getInventorySize(sides.bottom), robotLib.getInternalInventorySize())
+            local minSlots = math.min(robotLib.getInventorySize(sides.bottom) or 0, robotLib.getInternalInventorySize() or 0)
 
             -- 取出容器内的物品到机器人背包
             for i = 1, minSlots do
