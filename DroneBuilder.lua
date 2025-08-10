@@ -1,0 +1,69 @@
+--[[
+    This file is part of OpenComputer-CMBuilder
+    
+    Test File: DroneBuilder.lua
+    This file is used to control the drone to automatically craft items based on recipes.]]
+
+local sides = require("sides")
+local component = require("component")
+local event = require("event")
+local thread = require("thread")
+local term = require("term")
+local rs = component.redstone
+local keyboard = require("keyboard")
+local recipe = require("drone.Recipe")
+local droneLib = require("drone.DroneLib")
+
+-- 创建一个新的线程来监听键盘事件
+local function listenForKeyboard()
+    term.write("press 'q' to exit")
+    while true do
+        local _, _, _, key, _ = term.pull('key_down')
+        if (key == keyboard.keys.q) then
+            break
+        end
+        os.sleep(0.1)
+    end
+end
+
+local function runCrafting()
+    local address, port = droneLib.autoConnect(5)
+    while true do
+        if rs.getInput(sides.east) > 0 then
+            local jsonName, catalyst, product = recipe.matchRecipe(sides.up)
+
+            if not jsonName then
+                error("No matching recipe found.\n")
+            end
+
+            local blueprint = recipe.readJson(jsonName) -- 读取配方json
+
+            -- 移动到原材料存放容器上方
+            -- Moved above the raw material storage container
+            droneLib.move(address, -2, 1, 0)
+
+            droneLib.suck(address, sides.bottom)
+
+            -- 移动到工作区域的起始点 一层左下角上方
+            -- Move to the starting point of the crafting area, above the lower left corner of the first layer
+            droneLib.move(address, 1, 0, 2)
+
+            recipe.processRecipe(blueprint, sides.bottom, 5) -- 批量放置蓝图
+
+            -- 回到原点
+            droneLib.home(address)
+            recipe.relativePosition = { x = 1, y = 1, z = 1 } -- 重置相对位置
+
+            -- 等待3.5秒钟
+            os.sleep(3.5)
+        end
+        os.sleep(0.05)
+    end
+end
+
+-- 启动键盘监听线程
+local keybordThread = thread.create(listenForKeyboard)
+
+local craftingThread = thread.create(runCrafting)
+
+thread.waitForAny({ keybordThread })

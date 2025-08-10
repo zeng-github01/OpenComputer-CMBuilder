@@ -235,7 +235,6 @@ return {
     suckDown = suckDown,
     suckUp = suckUp,
     resetPosition = resetPosition,
-    -- getFacing = getFacing,
     selectItem = selectItem,
     use = use,
     useDown,useDown,

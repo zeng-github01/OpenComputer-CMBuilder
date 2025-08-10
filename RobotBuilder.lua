@@ -7,9 +7,8 @@ local term = require("term")
 local rs = component.redstone
 local keyboard = require("keyboard")
 local recipe = require("Recipe")
-local robotAPI = require("robot")
 
-local pasteMode = false
+local pasteMode = false --Bug Here: 目前只支持建造模式
 
 -- 创建一个新的线程来监听键盘事件
 local function listenForKeyboard()
