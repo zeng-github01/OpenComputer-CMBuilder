@@ -177,6 +177,6 @@ while true do
       end
       local success, err = pcall(fn, args)
       ack(from, success, tag, success and "" or tostring(err))
-    else ack(from,false,tag,"bad cmd") end
+    else ack(from,false,tag,"bad cmd: " .. cmd) end
   end
 end

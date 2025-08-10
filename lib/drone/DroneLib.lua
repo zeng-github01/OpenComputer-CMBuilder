@@ -65,7 +65,7 @@ function DroneLib.dropName(addr, itemName, damage, side, n)
 end
 
 function DroneLib.suck(addr, side)
-  return sendCommand(addr, "pull", {side = side})
+  return sendCommand(addr, "suck", {side = side})
 end
 
 function DroneLib.home(addr)

@@ -4,6 +4,7 @@
 local component = require("component")
 local json = require("json")
 local filesystem = require("filesystem")
+local serialization = require("serialization")
 
 local DroneLib = require("drone.DroneLib")
 
@@ -84,10 +85,10 @@ end
 
 --- 蓝图处理：自动连接无人机并批量放置蓝图
 -- @param blueprint 三维数组，内容为物品名或"air"
--- @param basePos   {x, y, z}，蓝图左下角基准点
 -- @param side      放置方向
--- @param timeout   连接超时时间
 local function processRecipe(address, blueprint, side)
+    -- print("蓝图结构预览：")
+    -- print(serialization.serialize(blueprint, true))
     local side = side or 0 -- 默认放置方向为下方
     for y, xLayer in ipairs(blueprint) do
         for x, zLayer in ipairs(xLayer) do

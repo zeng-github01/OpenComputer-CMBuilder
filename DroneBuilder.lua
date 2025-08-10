@@ -62,7 +62,7 @@ local function runCrafting()
             -- Move to the starting point of the crafting area, above the lower left corner of the first layer
             droneLib.move(address, 1, 0, 2)
 
-            recipe.processRecipe(blueprint, sides.bottom) -- 批量放置蓝图
+            recipe.processRecipe(address, blueprint, sides.bottom) -- 批量放置蓝图
 
             -- 回到原点
             droneLib.home(address)
