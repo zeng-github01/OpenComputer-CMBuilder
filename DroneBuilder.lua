@@ -61,12 +61,11 @@ local function runCrafting()
             -- 移动到工作区域的起始点 一层左下角上方
             -- Move to the starting point of the crafting area, above the lower left corner of the first layer
             droneLib.move(address, 1, 0, 2)
-
+            recipe.setMirror(-1, 1, -1)
             recipe.processRecipe(address, blueprint, sides.bottom) -- 批量放置蓝图
 
             -- 回到原点
             droneLib.home(address)
-            recipe.relativePosition = { x = 1, y = 1, z = 1 } -- 重置相对位置
 
             -- 等待3.5秒钟
             os.sleep(3.5)

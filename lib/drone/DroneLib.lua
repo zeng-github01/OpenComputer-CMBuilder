@@ -17,7 +17,7 @@ local function sendCommand(droneAddress, cmd, args)
     local params_string = serialization.serialize(args or {})
     modem.send(droneAddress, PORT, cmd, params_string, tag)
     while true do
-        local _, _, from, recvPort, _, ackType, ok, recvTag, err = event.pull(3, "modem_message")
+        local _, _, from, recvPort, _, ackType, ok, recvTag, err = event.pull(5, "modem_message")
         if recvPort == PORT and ackType == "ack" and recvTag == tag then
             return ok, err
         elseif not _ then
