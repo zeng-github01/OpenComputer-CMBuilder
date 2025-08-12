@@ -164,7 +164,7 @@ local function process_cell_content(addr, relativeX, relativeY, relativeZ, cell_
 
   -- 移动到目标格（世界坐标差分）
   if dx ~= 0 or dy ~= 0 or dz ~= 0 then
-    local ok, err = DroneLib.move(addr, dx, dy, dz)
+    local ok, err = DroneLib.move(addr, dx, dy, dz, true)
     if not ok then
       error(err or ("Failed to move to local ("..relativeX..","..relativeY..","..relativeZ..")"))
     end

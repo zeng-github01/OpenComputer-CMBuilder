@@ -1,6 +1,6 @@
 --[[
     This file is part of OpenComputer-CMBuilder
-    
+
     Test File: DroneBuilder.lua
     This file is used to control the drone to automatically craft items based on recipes.]]
 
@@ -49,7 +49,7 @@ local function runCrafting()
 
             -- 移动到原材料存放容器上方
             -- Moved above the raw material storage container
-            local ok, err = droneLib.move(address, -2, 1, 0)
+            local ok, err = droneLib.move(address, -2, 1, 0, true)
             if ok then
                 print("Moved to the raw material storage container.")
             else
@@ -60,12 +60,14 @@ local function runCrafting()
 
             -- 移动到工作区域的起始点 一层左下角上方
             -- Move to the starting point of the crafting area, above the lower left corner of the first layer
-            droneLib.move(address, 1, 0, 2)
+            droneLib.move(address, 1, 0, 2, true)
             recipe.setMirror(-1, 1, -1)
-            recipe.processRecipe(address, blueprint, sides.bottom) -- 批量放置蓝图
+            local success = recipe.processRecipe(address, blueprint, sides.bottom) -- 批量放置蓝图
 
-            -- 回到原点
-            droneLib.home(address)
+            if success then
+                -- 回到原点
+                droneLib.home(address)
+            end
 
             -- 等待3.5秒钟
             os.sleep(3.5)

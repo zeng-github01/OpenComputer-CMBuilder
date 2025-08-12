@@ -48,7 +48,9 @@ local pos = {x=0,y=0,z=0}  -- origin (0,0,0)
 
 -- ENERGY GUARD --------------------------------------------------------------
 local function waitEnergy()
-  if computer.energy() >= ENERGY_MIN then return end
+  if computer.energy() >= ENERGY_MIN then
+    computer.pullSignal(0.1) -- just a short wait to avoid busy loop
+   end
   -- 记录当前位置
   local oldPos = {x = pos.x, y = pos.y, z = pos.z}
   -- 回原点充电
@@ -158,7 +160,8 @@ local function unserialize(data)
   return output
 end
 
-
+-- 去重状态：只执行一次；重发回放上次 ACK
+local lastSeq,lastOK,lastMsg = 0,true,""
 
 -- MAIN LOOP -----------------------------------------------------------------
 modem.open(PORT)
@@ -175,8 +178,31 @@ while true do
           args = t
         end
       end
-      local success, err = pcall(fn, args)
-      ack(from, success, tag, success and "" or tostring(err))
+      local seq = tonumber(args.seq or 0) or 0
+      if seq > 0 then
+        if seq==lastSeq then
+          ack(from,lastOK,tag,lastMsg)
+        elseif seq==lastSeq+1 then
+          -- 记录上次状态
+          lastSeq, lastOK, lastMsg = seq, true, ""
+          -- 执行命令
+          local success, err = pcall(fn, args)
+          if success then
+            lastMsg = ""
+          else
+            lastOK = false
+            lastMsg = tostring(err)
+          end
+          -- 回放 ACK
+          ack(from, success, tag, lastMsg)
+        else
+          -- 重发回放上次 ACK
+          ack(from, lastOK, tag, lastMsg)
+        end
+      else
+        local success, err = pcall(fn, args)
+        ack(from, success, tag, success and "" or tostring(err))
+      end
     else ack(from,false,tag,"bad cmd: " .. cmd) end
   end
 end
