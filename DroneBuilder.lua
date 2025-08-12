@@ -12,6 +12,7 @@ local term = require("term")
 local rs = component.redstone
 local keyboard = require("keyboard")
 local recipe = require("drone.Recipe")
+---@type DroneLib
 local droneLib = require("drone.DroneLib")
 local term = require("term")
 

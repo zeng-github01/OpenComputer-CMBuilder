@@ -117,9 +117,9 @@ function DroneLib.shutdown(addr, enableRetry)
   return sendCommand(addr, "shutdown", {seq = -1}, enableRetry or false)
 end
 
-function DroneLib.resetSeq(addr)
+function DroneLib.resetSeq(addr , enableRetry)
   seqMap = {}
-  sendCommand(addr, "resetSeq", {seq = -1}, false)  -- 通知无人机重置序列号
+  sendCommand(addr, "resetSeq", {seq = -1}, enableRetry or false)  -- 通知无人机重置序列号
 end
 
 return DroneLib
