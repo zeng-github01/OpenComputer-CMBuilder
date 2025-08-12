@@ -31,10 +31,14 @@ local function sendCommand(droneAddress, cmd, args, enableRetry, overallTimeout)
   local serialized_payload = serialization.serialize(payload)
 
   local function dispatch()
-    modem.send(droneAddress, PORT, cmd, serialized_payload, tag)
+    return modem.send(droneAddress, PORT, cmd, serialized_payload, tag)
   end
 
-  dispatch()
+  local sent = dispatch()
+
+  if cmd == "shutdown" and sent then
+    return true, "Shutdown command sent"
+  end
 
   while true do
     local remaining = deadline - computer.uptime()
