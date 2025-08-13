@@ -1,5 +1,8 @@
 local function proxy(t) for a in component.list(t) do return component.proxy(a) end end
-local md = assert(proxy("modem"),"no modem"); local dr = assert(proxy("drone"),"no drone")
+---@type ModemProxy 
+local md = assert(proxy("modem"),"no modem")
+---@type DroneProxy
+local dr = assert(proxy("drone"),"no drone")
 local PORT,EMIN = 4711,2000
 local pos = {x=0,y=0,z=0}
 local lastSeq,lastOK,lastMsg = 0,true,""
@@ -16,6 +19,7 @@ local function waitEnergy()
   pos.x,pos.y,pos.z=old.x,old.y,old.z
 end
 
+---@type InventoryControllerProxy
 local inv = proxy("inventory_controller")
 
 local handlers = {}
@@ -61,6 +65,8 @@ function handlers.suck(a) waitEnergy(); repeat until not dr.suck(a.side or 3,64)
 function handlers.home() waitEnergy(); dr.move(-pos.x,-pos.y,-pos.z); pos.x,pos.y,pos.z=0,0,0 end
 function handlers.shutdown() computer.shutdown() end
 function handlers.ping() end
+function handlers.use(a) waitEnergy(); dr.use(a.side,a.sneaky,a.duration); end
+function handlers.swing(a) waitEnergy(); dr.swing(a.side or 3); end
 function handlers.resetSeq() lastSeq,lastOK,lastMsg = 0,true,"" end
 
 local function unserialize(s)

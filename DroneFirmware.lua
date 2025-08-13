@@ -50,19 +50,23 @@ local pos = {x=0,y=0,z=0}  -- origin (0,0,0)
 local function waitEnergy()
   if computer.energy() >= ENERGY_MIN then
     computer.pullSignal(0.1) -- just a short wait to avoid busy loop
+    return
    end
   -- 记录当前位置
   local oldPos = {x = pos.x, y = pos.y, z = pos.z}
   -- 回原点充电
-  drone.move(-pos.x, -pos.y, -pos.z)
-  pos.x, pos.y, pos.z = 0, 0, 0
   drone.setStatusText("Charging...")
+  drone.move(-pos.x, -pos.y, -pos.z)
   while computer.energy() < computer.maxEnergy() * 0.98 do
     computer.pullSignal(2)
   end
+  pos.x, pos.y, pos.z = 0, 0, 0
   drone.setStatusText("Resume work")
   -- 返回原先位置
   drone.move(oldPos.x, oldPos.y, oldPos.z)
+  while (drone.getOffset()) >= 0.3 do
+    computer.pullSignal(0.5)
+  end
   pos.x, pos.y, pos.z = oldPos.x, oldPos.y, oldPos.z
 end
 
@@ -77,6 +81,9 @@ function handlers.move(args)
     args.y or 0,  -- relative Y move
     args.z or 0   -- relative Z move
   )
+  while (drone.getOffset()) >= 0.3 do
+    computer.pullSignal(0.5)  -- wait until the drone has moved
+  end
   pos.x = pos.x + (args.x or 0)
   pos.y = pos.y + (args.y or 0)
   pos.z = pos.z + (args.z or 0)
@@ -137,6 +144,9 @@ function handlers.home()
     -pos.y,  -- relative Y move to origin
     -pos.z   -- relative Z move to origin
   )
+  while (drone.getOffset()) >= 0.3 do
+    computer.pullSignal(0.5)  -- wait until the drone has moved
+  end
   pos.x, pos.y, pos.z = 0, 0, 0  -- reset position
 end
 
