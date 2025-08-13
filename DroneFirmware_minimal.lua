@@ -62,7 +62,7 @@ function handlers.drop(a)
 end
 
 function handlers.suck(a) waitEnergy(); repeat until not dr.suck(a.side or 3,64) end
-function handlers.home() waitEnergy(); dr.move(-pos.x,-pos.y,-pos.z); pos.x,pos.y,pos.z=0,0,0 end
+function handlers.home() waitEnergy(); dr.move(-pos.x,-pos.y,-pos.z); while dr.getOffset() > 0.3 do computer.pullSignal(0.5) end; pos.x,pos.y,pos.z=0,0,0 end
 function handlers.shutdown() computer.shutdown() end
 function handlers.ping() end
 function handlers.use(a) waitEnergy(); dr.use(a.side,a.sneaky,a.duration); end
