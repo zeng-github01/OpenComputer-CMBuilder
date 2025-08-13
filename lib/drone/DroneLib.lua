@@ -122,4 +122,12 @@ function DroneLib.resetSeq(addr , enableRetry)
   sendCommand(addr, "resetSeq", {seq = -1}, enableRetry or false)  -- 通知无人机重置序列号
 end
 
+function DroneLib.use(addr, side, sneaky, duration, enableRetry)
+  return sendCommand(addr, "use", { side = side or 3, sneaky = sneaky or false, duration = duration or 1 }, enableRetry or false)
+end
+
+function DroneLib.swing(addr, side, enableRetry)
+  return sendCommand(addr, "swing", { side = side or 3 }, enableRetry or false)
+end
+
 return DroneLib
