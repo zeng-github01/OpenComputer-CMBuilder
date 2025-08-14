@@ -5,6 +5,76 @@ local modem = component.modem
 local serialization = require("serialization")
 local PORT = 4711  -- 监听端口
 
+-- Help metadata
+local HELP_ORDER = {
+  "help", "ping", "home",
+  "move", "place", "drop", "suck", "use", "swing", "shutdown"
+}
+
+local HELP = {
+  help = {
+    usage = "help [command]",
+    desc  = "Show usage for all commands, or details for a specific command."
+  },
+  ping = {
+    usage = "ping",
+    desc  = "Ping the drone. No arguments."
+  },
+  home = {
+    usage = "home",
+    desc  = "Return drone to home position. No arguments."
+  },
+  move = {
+    usage = "move <x> <y> <z>",
+    desc  = "Relative movement offsets (numbers)."
+  },
+  place = {
+    usage = "place <mode> <slot> <side> | place name <itemName> <damage> <side>",
+    desc  = "Two modes: slot-mode or name-mode. side is OpenComputers side id (0-5)."
+  },
+  drop = {
+    usage = "drop <mode> <slot> <side> [n] | drop name <itemName> <damage> <side> [n]",
+    desc  = "Drop items. mode depends on your firmware (e.g., slot/name/all). side is 0-5; n is optional count."
+  },
+  suck = {
+    usage = "suck <side>",
+    desc  = "Pull (suck) from the given side (0-5)."
+  },
+  use = {
+    usage = "use <side>",
+    desc  = "Use on the given side (0-5)."
+  },
+  swing = {
+    usage = "swing <side> [sneaky=false] [duration=1]",
+    desc  = "Swing on side (0-5). Optional sneaky (boolean) and duration (number)."
+  },
+  shutdown = {
+    usage = "shutdown",
+    desc  = "Shutdown the drone. No arguments."
+  },
+}
+
+local function printHelp(cmd)
+  if not cmd or cmd == "" then
+    print("Available commands:")
+    for _, name in ipairs(HELP_ORDER) do
+      local h = HELP[name]
+      if h then
+        print("  " .. h.usage)
+      end
+    end
+    print("\nType 'help <command>' for details.")
+    return
+  end
+  local h = HELP[cmd]
+  if not h then
+    print("Unknown command: " .. tostring(cmd))
+    return
+  end
+  print("Usage: " .. h.usage)
+  if h.desc then print("  " .. h.desc) end
+end
+
 -- 自动连接：发送 ping 并等待回应
 local function autoConnect(timeout)
   local params = {}  -- 或 packArgs("ping", {})，结果都是 {}
@@ -65,11 +135,12 @@ local function sendCommand(droneAddress, port, cmd, args)
   modem.send(droneAddress, port, cmd, params_string, tag)
 
   while true do
-    local _, _, from, recvPort, _, ackType, ok, recvTag, err = event.pull(3, "modem_message") -- 3秒超时
+    local ev, _, from, recvPort, _, ackType, ok, recvTag, err = event.pull(3, "modem_message") -- 3秒超时
+    if ev == nil then
+      return false, "Timeout waiting for ack"
+    end
     if recvPort == port and ackType == "ack" and recvTag == tag then
       return ok, err
-    elseif not _ then
-      return false, "Timeout waiting for ack"
     end
   end
 end
@@ -78,8 +149,8 @@ end
 local function testCommand(droneAddress, port)
   term.clear()
   print("Drone Debug Console")
-  print("Available commands: move, place, drop, swing, use, home, ping, shutdown")
-  print("Type 'exit' to quit.\n")
+  print("Available commands: move, place, drop, pull, swing, use, home, ping, shutdown, help")
+  print("Type 'help' or 'help <command>' for usage. Type 'exit' to quit.\n")
 
   while true do
     io.write("> ")
@@ -87,11 +158,22 @@ local function testCommand(droneAddress, port)
     if input == "exit" then break end
 
     local cmd, a1, a2, a3, a4, a5, a6 = input:match("^(%S+)%s*(%S*)%s*(%S*)%s*(%S*)%s*(%S*)%s*(%S*)%s*(%S*)")
-    local args = {}
 
+    -- help is handled locally
+    if cmd == "help" then
+      printHelp(a1)
+      goto continue
+    end
+
+    -- parse args (numbers -> number; true/false -> boolean; else string)
+    local args = {}
     for _, v in ipairs({a1, a2, a3, a4, a5, a6}) do
       if v == "" then
         table.insert(args, nil)
+      elseif v == "true" then
+        table.insert(args, true)
+      elseif v == "false" then
+        table.insert(args, false)
       elseif tonumber(v) then
         table.insert(args, tonumber(v))
       else
@@ -105,6 +187,8 @@ local function testCommand(droneAddress, port)
     else
       print("Failed: " .. tostring(err))
     end
+
+    ::continue::
   end
 end
 
