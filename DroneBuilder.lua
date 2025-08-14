@@ -20,54 +20,106 @@ local function listenForKeyboard()
 end
 
 local function runCrafting(address)
-    while true do
+    local function drawFrame()
         term.clear()
-        term.write("press 'q' to exit")
+        term.setCursor(1, 1)
+        print("+--------------------------------------+")
+        print("| CMBuilder: Drone Edition             |")
+        print("| Press 'q' to exit                    |")
+        print("+--------------------------------------+")
+    end
+
+    local function drawStatus(line, msg)
+        term.setCursor(2, line)
+        term.write(msg)
+    end
+
+    while true do
+        drawFrame()
+
         if rs.getInput(sides.east) > 0 then
-            print("Crafting started...")
+            drawStatus(5, "Crafting triggered...")
+
             local jsonName, catalyst, product = recipe.matchRecipe(sides.up)
             if not jsonName then
-                error("No matching recipe found.\n")
+                drawStatus(7, "No matching recipe found.")
+                os.sleep(0.1)
+                goto continue
             end
-            print("Recipe found: " .. jsonName)
-            print("Catalyst: " .. (catalyst and catalyst.name or "None"))
-            print("Product: " .. (product and product.name or "None"))
+
+            drawStatus(6, "Recipe: " .. jsonName)
+            drawStatus(7, "Catalyst: " .. (catalyst and catalyst.name or "None"))
+            drawStatus(8, "Product:  " .. (product and product.name or "None"))
+
             local blueprint = recipe.readJson(jsonName)
-            assert(blueprint, "Failed to read recipe JSON: " .. jsonName)
+            if not blueprint then
+                drawStatus(10, "Failed to read recipe JSON.")
+                os.sleep(0.1)
+                goto continue
+            end
 
             local ok, err = droneLib.move(address, -2, 1, 0, true)
             if ok then
-                print("Moved to the raw material storage container.")
+                drawStatus(10, "Moved to raw material container.")
             else
-                error("Failed to move to the raw material storage container: " .. err)
-            end
-            local ok, err = droneLib.suck(address, sides.bottom)
-            if not ok then
-                print("Failed to suck items from the storage container: " .. err)
-                break
+                drawStatus(10, "Move failed: " .. err)
+                os.sleep(0.1)
+                goto continue
             end
 
-            local ok, err = droneLib.move(address, 1, 0, 2)
-            if ok then
-                print("Moved to the crafting area starting point.")
-            else
-                print("Failed to move to the crafting area starting point: " .. err)
-                break
+            ok, err = droneLib.suck(address, sides.bottom)
+            if not ok then
+                drawStatus(11, "Suck failed: " .. err)
+                os.sleep(0.1)
+                goto continue
             end
+
+            ok, err = droneLib.move(address, 1, 0, 2)
+            if ok then
+                drawStatus(12, "Moved to crafting area.")
+            else
+                drawStatus(12, "Move failed: " .. err)
+                os.sleep(0.1)
+                goto continue
+            end
+
             recipe.setMirror(-1, 1, -1)
             local success = recipe.processRecipe(address, blueprint, sides.bottom)
             if success then
-                local ok, err = droneLib.home(address)
+                drawStatus(13, "Recipe processed successfully.")
+                ok, err = droneLib.home(address)
                 if ok then
                     -- drop catalyst
                     -- find nearest Dropper or Dispenser by yourself
                     -- drone can't drop items directly
-                    droneLib.move(address, 1, 1, 2)
-                    droneLib.dropName(address, catalyst.name, catalyst.damage, sides.bottom, 1, true)
-                    droneLib.home()
+                    ok, err = droneLib.move(address, 1, 1, 2)
+                    if ok then
+                        drawStatus(14, "Moved to dropper/dispenser.")
+                    else
+                        drawStatus(14, "Move to dropper/dispenser failed: " .. err)
+                        os.sleep(0.1)
+                        goto continue
+                    end
+
+                    ok, err = droneLib.dropName(address, catalyst.name, catalyst.damage, sides.bottom, 1, true)
+                    if ok then
+                        drawStatus(15, "Catalyst dropped.")
+                        drawStatus(16, "Returning home...")
+                        droneLib.home(address)
+                    else
+                        drawStatus(15, "Drop failed: " .. err)
+                        os.sleep(1)
+                        goto continue
+                    end
                 end
+            else
+                drawStatus(13, "Recipe processing failed.")
+                os.sleep(1)
             end
         end
+
+        ::continue::
+        droneLib.home(address)
         os.sleep(0.05)
     end
 end
