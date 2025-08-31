@@ -6,7 +6,7 @@ local thread = require("thread")
 local term = require("term")
 local rs = component.redstone
 local keyboard = require("keyboard")
-local recipe = require("robot.Recipe")
+local recipe = require("robot.RobotRecipe")
 
 local pasteMode = false --Bug Here: 目前只支持建造模式
 

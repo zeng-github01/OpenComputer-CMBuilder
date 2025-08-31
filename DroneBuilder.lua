@@ -5,7 +5,7 @@ local thread = require("thread")
 local term = require("term")
 local rs = component.redstone
 local keyboard = require("keyboard")
-local recipe = require("drone.Recipe")
+local recipe = require("drone.DroneRecipe")
 local droneLib = require("drone.DroneLib")
 local term = require("term")
 
